@@ -29,10 +29,12 @@ public class SParse {	public static Scanner scn;
 	static Connection conn;
 	
 	public static void main(String[] args) {		
-		getTextFromDB();
-		//SParse.loadTextFromCSV();
-		//String testStr = "A man went to the park with his dog";//works
-		String testStr = "A man in a car drove to the park";//works
+		//getTextFromDB();
+		
+		//writeWordCSV();
+		readWordCSV();
+		String testStr = "A man went to the park with his dog";//works
+		//String testStr = "A man in a car drove to the park";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
 		int test = 0;
@@ -73,22 +75,83 @@ public class SParse {	public static Scanner scn;
 		}finally {
 			
 		}
+		
+	}
+	
+	public static void writeWordObjects() { //broken
 		//this part writes it to the file
+				try (
+					BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/words/objectlist.txt")));
+				) {
+					for(Word w: wList) {
+						br.write(w.toString());
+					}
+					
+					
+				}catch (IOException e) {			
+					e.printStackTrace();
+				}
+	}
+	
+	public static void writeWordCSV() {
+		conn = mysqlConnHelper.getConnection();
+		//verb phrase is the top level as far as phrases are concerned. these can contain other verb phrases, or noun and prep. phrases
+		//noun phrases and prepositional phrases can recursively contain one another
+		//sentences must contain a NP and a VP. AUXillary verbs are optional and change the tense, voice, etc
+		//
+		 wList = new LinkedList<Word>();
+		 Word prevWord = null;
+		 
+		
 		try (
-			BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/words/objectlist.txt")));
-		) {
-			for(Word w: wList) {
-				br.write(w.toString());
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM entries WHERE LENGTH(wordtype) > 0 ORDER BY word ASC, wordtype ASC");
+		){
+			try (
+					BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/words/objectlist.txt")));
+				) {
+				while(rs.next()) {					
+					br.write(rs.getNString(1).toLowerCase() +","+ rs.getNString(2).toLowerCase()+","+ rs.getNString(3).toLowerCase()+"\n");	
 			}
+			}catch (IOException e) {			
+				e.printStackTrace();
+			}
+		}catch(SQLException ex) {
+			 System.out.println("SQLException: " + ex.getMessage());
+			    System.out.println("SQLState: " + ex.getSQLState());
+			    System.out.println("VendorError: " + ex.getErrorCode());
+
+		}finally {
 			
-			
-		}catch (IOException e) {			
-			e.printStackTrace();
 		}
 	}
 	
+	public static void readWordCSV() {
+		try (
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./src/words/objectlist.txt")));
+			) {
+				wList = new LinkedList<Word>();
+				String ln = "";
+				Word prevWord = null;
+				while((ln = br.readLine())!=null) {	
+					String[] wrds = ln.split(",");
+					if(wrds.length<3)continue;
+					if(prevWord == null || !prevWord.getVal().equals(wrds[0].toLowerCase())) {
+						if(prevWord!=null)prevWord.guessPart();
+						wList.add(prevWord = new Word(wrds[0].toLowerCase(), wrds[2].toLowerCase(), wrds[1].toLowerCase()));												
+					}
+					else {
+						prevWord.addDef(wrds[2].toLowerCase(), wrds[1].toLowerCase());
+					}
+				}
+				
+			}catch (IOException e) {			
+				e.printStackTrace();
+			}
+	}
 	
-	public static void loadTextFromCSV() {
+	
+	public static void loadTextFromObjects() { //broken
 		try (
 				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./src/words/objectlist.txt")));
 			) {
@@ -142,10 +205,11 @@ public class SParse {	public static Scanner scn;
 			}
 			nList.add(n);
 		}
-		//I have to add more patterns, to try to match the more restrictive versions of each first, then gradually work down into the less so. Restart every time
-		// a match is made? try first without
 		
-		String[] pList = {	"[bx]?cd*",
+		// Patterns reversed char-wise, listed in order as follows:
+		//adverb,adjective, preposition,noun,verb,sentence
+		String[] pList = {	"[bx]?dc*",
+							"[bx]?cd*",
 							"[akzm]b",
 							"[bx]?[ma]c*[ne]?",							
 							"d*[bx]?[akzm]?[h-j]",							
@@ -168,11 +232,12 @@ public class SParse {	public static Scanner scn;
 					for(int j = 0; j < len; j++) {
 						tempList.add(0,nList.remove(lSize - m.start()-j));
 					}
-					switch(i) {	case 0:  phr = new AdjectivePhrase(tempList);break;
-								case 1:  phr = new PrepPhrase(tempList);break;							
-								case 2:  phr = new NounPhrase(tempList);break;
-								case 3:  phr = new VerbPhrase(tempList);break;								
-								case 4:  phr = new Sentence(tempList);break;
+					switch(i) {	case 0:	 phr = new AdverbPhrase(tempList);break;
+								case 1:  phr = new AdjectivePhrase(tempList);break;
+								case 2:  phr = new PrepPhrase(tempList);break;							
+								case 3:  phr = new NounPhrase(tempList);break;
+								case 4:  phr = new VerbPhrase(tempList);break;								
+								case 5:  phr = new Sentence(tempList);break;
 					}
 					nList.add(nList.size()-m.start(), phr);
 					pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();

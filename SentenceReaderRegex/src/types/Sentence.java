@@ -7,11 +7,13 @@ public class Sentence extends Phrase{
 	public Sentence(Node l, Node r) {
 		Left = l;
 		Right = r;
+		symbol = 's';
 	}
 	
 	public Sentence(ArrayList<Node> aList) {
 		Left = aList.remove(0);
 		Right = aList.remove(0);
+		symbol = 's';
 	}
 	
 	public String toString() {
