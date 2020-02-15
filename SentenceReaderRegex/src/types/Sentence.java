@@ -4,20 +4,21 @@ import java.util.ArrayList;
 
 public class Sentence extends Phrase{
 	public Node Left, Right;
-	public Sentence(Node l, Node r) {
-		Left = l;
-		Right = r;
+	public Sentence() {
 		symbol = 's';
 	}
 	
-	public Sentence(ArrayList<Node> aList) {
-		Left = aList.remove(0);
-		Right = aList.remove(0);
+	public Sentence(ArrayList<Node> c) {
+		children = c;
 		symbol = 's';
 	}
 	
-	public String toString() {
-		return Left.toString() + " & " + Right.toString();
-		
+	public String toString(){
+		String rVal = "[";
+		for(Node n : children) {
+			rVal += n.toString() + ", ";
+		}
+		rVal = rVal.substring(0, rVal.length()-2) + "]";
+		return rVal;
 	}
 }

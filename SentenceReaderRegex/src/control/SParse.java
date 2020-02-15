@@ -26,6 +26,7 @@ public class SParse {	public static Scanner scn;
 	
 	
 	public static LinkedList<Word> wList;
+	public static Word[] wListA;
 	static Connection conn;
 	
 	public static void main(String[] args) {		
@@ -33,8 +34,8 @@ public class SParse {	public static Scanner scn;
 		
 		//writeWordCSV();
 		readWordCSV();
-		String testStr = "A man went to the park with his dog";//works
-		//String testStr = "A man in a car drove to the park";//works
+		//String testStr = "A man deputed to the park with his dog";//works
+		String testStr = "Little John drove in a car to the park but he fell and hurt his hand";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
 		int test = 0;
@@ -75,7 +76,8 @@ public class SParse {	public static Scanner scn;
 		}finally {
 			
 		}
-		
+		wListA = new Word[wList.size()];
+		 wList.toArray(wListA);
 	}
 	
 	public static void writeWordObjects() { //broken
@@ -111,7 +113,7 @@ public class SParse {	public static Scanner scn;
 					BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/words/objectlist.txt")));
 				) {
 				while(rs.next()) {					
-					br.write(rs.getNString(1).toLowerCase() +","+ rs.getNString(2).toLowerCase()+","+ rs.getNString(3).toLowerCase()+"\n");	
+					br.write(rs.getNString(1).toLowerCase().replace('\n', ' ') +","+ rs.getNString(2).toLowerCase().replace('\n', ' ')+","+ rs.getNString(3).toLowerCase().replace('\n', ' ')+"\n");	
 			}
 			}catch (IOException e) {			
 				e.printStackTrace();
@@ -148,6 +150,8 @@ public class SParse {	public static Scanner scn;
 			}catch (IOException e) {			
 				e.printStackTrace();
 			}
+		wListA = new Word[wList.size()];
+		 wList.toArray(wListA);
 	}
 	
 	
@@ -208,18 +212,19 @@ public class SParse {	public static Scanner scn;
 		
 		// Patterns reversed char-wise, listed in order as follows:
 		//adverb,adjective, preposition,noun,verb,sentence
-		String[] pList = {	"[bx]?dc*",
-							"[bx]?cd*",
-							"[akzm]b",
-							"[bx]?[ma]c*[ne]?",							
-							"d*[bx]?[akzm]?[h-j]",							
-							"yz"};
+		String[] pList = {	"([bx]?dc*|v(lv)+)",
+							"([bx]?cd*|w(lw)+)",
+							"([akzm]b|x(lx)+)",
+							"([bx]?[ma][wc]*[ne]?|z(lz)+)",
+							"([dv]*[bx]?[akzm]?[f-j]|y(ly)+)",
+							"(yz|s(ls)+)",
+							};
 		String pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
 		System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
 		Pattern endP = Pattern.compile("^[wxyz]+$");
 		Matcher endM = endP.matcher(pStr);
 		int count = 0;
-		while(!endM.matches() && count++ < 8) {//while anything other than a phrase [w-z] char is found in pStr
+		while(!endM.matches() && count++ < 20) {//while anything other than a phrase [w-z] char is found in pStr
 			for(int i = 0; i < pList.length; i++) {		
 				Pattern ptrn = Pattern.compile(pList[i]); 
 				Matcher m = ptrn.matcher(pStr);
@@ -234,9 +239,9 @@ public class SParse {	public static Scanner scn;
 					}
 					switch(i) {	case 0:	 phr = new AdverbPhrase(tempList);break;
 								case 1:  phr = new AdjectivePhrase(tempList);break;
-								case 2:  phr = new PrepPhrase(tempList);break;							
+								case 2:  phr = new PrepPhrase(tempList);break;
 								case 3:  phr = new NounPhrase(tempList);break;
-								case 4:  phr = new VerbPhrase(tempList);break;								
+								case 4:  phr = new VerbPhrase(tempList);break;	
 								case 5:  phr = new Sentence(tempList);break;
 					}
 					nList.add(nList.size()-m.start(), phr);
@@ -250,7 +255,7 @@ public class SParse {	public static Scanner scn;
 		
 		int test = 0;
 		test++;
-		return n;
+		return nList.get(0);
 		
 	}
 	
@@ -262,12 +267,22 @@ public class SParse {	public static Scanner scn;
 		return rVal;
 	}
 	
+	
 	public static Word getWordObj(String str) {
+		int ind = -1;
+		if((ind = Arrays.binarySearch(wListA,new Word(str)))!= -1) {
+			return wListA[ind];
+		}
+		return new Word(str, "n.", "Proper Name");
+	}
+
+	
+	/*public static Word getWordObj(String str) {
 		for(Word w: wList) {
 			if(w.getVal().compareTo(str)==0)return w; //change to clone later
 		}
 		return null;
-	}
+	}*/
 
 	public static void printNodes() {
 		

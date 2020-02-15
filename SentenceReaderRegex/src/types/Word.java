@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import types.Def;
 
-public class Word implements Cloneable{
+public class Word implements Comparable<Word>, Cloneable{
 	public static String[] partList = {"prep.","n.","a.","v. t.","v. i.", "adv.","p. pr.", "p. p.","vb. n.",
-			"imp.","superl.", "pl.", "definite article.","interj.", "n sing.", "pron.", "conj.","poss. pr."};
+			"imp.","superl.", "pl.", "definite article.","interj.", "n sing.", "pron.", "conj.","poss. pr.", "obj."};
 	private static String[] adjectiveEndings = {"able", "ible", "al", "ful", "ic", "ive", "less", "ous"};
 	private ArrayList<Def> defs;
 	private String val;
@@ -55,15 +55,17 @@ public class Word implements Cloneable{
 	
 	public void guessPart() {
 		int temp = -1;
-		if((temp=this.getPartWithDef(9,6,7))!=-1)sPart = temp;
+		if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
+		else if((temp=this.getPartWithDef(9,6,7))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(0))!=-1)sPart = temp;												//conjugated verb
 		else if((temp=this.getPartWithDef(3,4))!=-1 && this.getPartWithDef(1)==-1)sPart = temp;				//non conjugated verb
-		else if((temp=this.getPartWithDef(15))!=-1)sPart = temp;											//pronoun
+		else if((temp=this.getPartWithDef(15,18))!=-1)sPart = 15;											//pronoun
 		else if((temp=this.getPartWithDef(8))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(12))!=-1)sPart = temp;
-		else if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
-		else if((temp=this.getPartWithDef(5))!=-1)sPart = temp;
+		
 		else if((temp=this.getPartWithDef(2))!=-1)sPart = temp;
+		else if((temp=this.getPartWithDef(5))!=-1)sPart = temp;
+		
 		else if((temp=this.getPartWithDef(1))!=-1)sPart = temp;
 			
 	}
@@ -122,6 +124,10 @@ public class Word implements Cloneable{
 	
 	public Word clone() {
 		return new Word(this.val, (ArrayList<Def>) this.defs.clone());
+	}
+	
+	public int compareTo(Word w) {
+		return this.val.compareTo(w.val);
 	}
 	
 	//*****************************inner Definition Class
