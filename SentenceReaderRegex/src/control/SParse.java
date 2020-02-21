@@ -30,14 +30,18 @@ public class SParse {	public static Scanner scn;
 	static Connection conn;
 	
 	public static void main(String[] args) {		
-		//getTextFromDB();
-		
+		//getTextFromDB();		
 		//writeWordCSV();
+		
 		readWordCSV();
-		//String testStr = "A man deputed to the park with his dog";//works
-		String testStr = "Little John drove in a car to the park but he fell and hurt his hand";//works
+		//String testStr = "A man had to go to the park with his dog";//works
+		String testStr = "John could have paid him tomorrow";
+		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
+		Mode testMode = null;
+		if((testMode = Modality.getModality((Sentence)endVal)) != null)System.out.println("\n\nmodality : " + testMode.toString());
+		
 		int test = 0;
 		test ++;
 	}
@@ -189,7 +193,7 @@ public class SParse {	public static Scanner scn;
 		Node n = null;
 		for(String s : temp) {
 			
-			tW = getWordObj(s);
+			tW = Word.getWordObj(s);
 			switch(tW.sPart) {
 				case 0: n = new Preposition(tW);break;
 				case 1: n = new Noun(tW);break;
@@ -206,18 +210,25 @@ public class SParse {	public static Scanner scn;
 				case 11: n = new Noun(tW);break;
 				case 15: n = new Pronoun(tW);break;
 				case 16: n = new Conjunction(tW);break;
+				case 20: n = new Auxiliary(tW);break;
 			}
 			nList.add(n);
 		}
+		//need to change any ambiguous words like dog into nouns in the case that they are used after a pronoun
 		
+		nList = adjustWordType(nList);
+		
+		
+		//hopefully now it wont make phrases out of single adjectives and adverbs. tht should be the standard for all types.
 		// Patterns reversed char-wise, listed in order as follows:
 		//adverb,adjective, preposition,noun,verb,sentence
-		String[] pList = {	"([bx]?dc*|v(lv)+)",
-							"([bx]?cd*|w(lw)+)",
+		String[] pList = {	"b?p+",
+							"([bx]?dc+|[bx]dc*|v(lv)+)",
+							"([bx]?cd+|[bx]cd*|w(lw)+)",
 							"([akzm]b|x(lx)+)",
 							"([bx]?[ma][wc]*[ne]?|z(lz)+)",
 							"([dv]*[bx]?[akzm]?[f-j]|y(ly)+)",
-							"(yz|s(ls)+)",
+							"(u?yz|yu?z|yzu?|s(ls)+)",   				//inquisitive, declarative, conditional, compound sentence
 							};
 		String pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
 		System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
@@ -237,12 +248,13 @@ public class SParse {	public static Scanner scn;
 					for(int j = 0; j < len; j++) {
 						tempList.add(0,nList.remove(lSize - m.start()-j));
 					}
-					switch(i) {	case 0:	 phr = new AdverbPhrase(tempList);break;
-								case 1:  phr = new AdjectivePhrase(tempList);break;
-								case 2:  phr = new PrepPhrase(tempList);break;
-								case 3:  phr = new NounPhrase(tempList);break;
-								case 4:  phr = new VerbPhrase(tempList);break;	
-								case 5:  phr = new Sentence(tempList);break;
+					switch(i) {	case 0: phr = new AuxiliaryPhrase(tempList);break;
+								case 1:	 phr = new AdverbPhrase(tempList);break;
+								case 2:  phr = new AdjectivePhrase(tempList);break;
+								case 3:  phr = new PrepPhrase(tempList);break;
+								case 4:  phr = new NounPhrase(tempList);break;
+								case 5:  phr = new VerbPhrase(tempList);break;	
+								case 6:  phr = new Sentence(tempList);break;
 					}
 					nList.add(nList.size()-m.start(), phr);
 					pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
@@ -253,11 +265,28 @@ public class SParse {	public static Scanner scn;
 			}
 		}
 		
-		int test = 0;
-		test++;
+		
 		return nList.get(0);
 		
 	}
+	
+	public static ArrayList<Node> adjustWordType(ArrayList<Node> nList) {
+		Node cN=null, pN=null;
+		for(int i = 0; i < nList.size();i++) {
+			cN = nList.get(i);
+			if(pN!=null) {
+				if(pN instanceof Determiner || pN.symbol == 'n')
+					if(cN.val.getPartWithDef(1)==1) {
+						nList.remove(i);
+						nList.add(i, new Noun(cN.val));						
+					}		
+			}
+			pN = cN;
+		}
+		return nList;
+	}
+	
+	
 	
 	public static String getRCharStringFromList(ArrayList<Node> nList) {
 		String rVal = "";
@@ -268,13 +297,7 @@ public class SParse {	public static Scanner scn;
 	}
 	
 	
-	public static Word getWordObj(String str) {
-		int ind = -1;
-		if((ind = Arrays.binarySearch(wListA,new Word(str)))!= -1) {
-			return wListA[ind];
-		}
-		return new Word(str, "n.", "Proper Name");
-	}
+	
 
 	
 	/*public static Word getWordObj(String str) {

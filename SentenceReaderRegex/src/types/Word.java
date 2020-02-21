@@ -1,13 +1,19 @@
   package types;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
+
+import control.SParse;
 import types.Def;
 
 public class Word implements Comparable<Word>, Cloneable{
 	public static String[] partList = {"prep.","n.","a.","v. t.","v. i.", "adv.","p. pr.", "p. p.","vb. n.",
 			"imp.","superl.", "pl.", "definite article.","interj.", "n sing.", "pron.", "conj.","poss. pr.", "obj."};
-	private static String[] adjectiveEndings = {"able", "ible", "al", "ful", "ic", "ive", "less", "ous"};
+	private static ArrayList<String> auxiliaries = new ArrayList<String>(Arrays.asList(new String[]{"is", "am", "are", "was", "were", "can","could","dare","do", "did",
+			"does","have","had","has","may","might","must","need","ought","shall", "should","will", "would"}));
+	
 	private ArrayList<Def> defs;
 	private String val;
 	public int sPart;
@@ -26,6 +32,11 @@ public class Word implements Comparable<Word>, Cloneable{
 	public Word(String v, ArrayList<Def> de) {
 		val = v;
 		defs = de;
+	}
+	
+	public Word(int part) {  //generic constructor for modality
+		this.val = "any";
+		this.sPart = part;
 	}
 	
 	public ArrayList<Def> getDefs() {
@@ -55,11 +66,13 @@ public class Word implements Comparable<Word>, Cloneable{
 	
 	public void guessPart() {
 		int temp = -1;
-		if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
+		if(auxiliaries.contains(this.val)) {sPart = 20;}
+		else if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(9,6,7))!=-1)sPart = temp;
-		else if((temp=this.getPartWithDef(0))!=-1)sPart = temp;												//conjugated verb
-		else if((temp=this.getPartWithDef(3,4))!=-1 && this.getPartWithDef(1)==-1)sPart = temp;				//non conjugated verb
-		else if((temp=this.getPartWithDef(15,18))!=-1)sPart = 15;											//pronoun
+		else if((temp=this.getPartWithDef(0))!=-1)sPart = temp;	
+		else if((temp=this.getPartWithDef(3,4))!=-1)sPart = temp;
+		//else if((temp=this.getPartWithDef(3,4))!=-1 && this.getPartWithDef(1)==-1)sPart = temp; //I will assume this is a verb, but if it is found after a pronoun or determiner I will change it to a noun
+		else if((temp=this.getPartWithDef(15,18))!=-1)sPart = 15;											
 		else if((temp=this.getPartWithDef(8))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(12))!=-1)sPart = temp;
 		
@@ -108,6 +121,14 @@ public class Word implements Comparable<Word>, Cloneable{
 			if(this.getDefWithPart(1,2,8,12,14,15)!= null)return true;
 		}
 		return false;
+	}
+	
+	public static Word getWordObj(String str) {
+		int ind = -1;
+		if((ind = Arrays.binarySearch(SParse.wListA,new Word(str)))> -1) {
+			return SParse.wListA[ind];
+		}
+		return new Word(str, "n.", "Proper Name");
 	}
 	
 	public String toString() {

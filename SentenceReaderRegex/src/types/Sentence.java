@@ -3,7 +3,7 @@ package types;
 import java.util.ArrayList;
 
 public class Sentence extends Phrase{
-	public Node Left, Right;
+	//public Node Left, Right;
 	public Sentence() {
 		symbol = 's';
 	}
@@ -19,6 +19,14 @@ public class Sentence extends Phrase{
 			rVal += n.toString() + ", ";
 		}
 		rVal = rVal.substring(0, rVal.length()-2) + "]";
+		return rVal;
+	}
+	
+	public AuxiliaryPhrase getAuxPhrase() {//if I am parsing compound sentences, I will have to parse them individually from the top level, or add a list function
+		AuxiliaryPhrase rVal = null;
+		if(children.get(1) instanceof AuxiliaryPhrase) rVal = (AuxiliaryPhrase) children.get(1);
+		
+		
 		return rVal;
 	}
 }
