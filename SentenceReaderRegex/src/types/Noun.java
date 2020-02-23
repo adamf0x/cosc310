@@ -8,8 +8,9 @@ public class Noun extends Node{
 		super(val);
 		if(flags.length > 0 && flags[0])subject = true;
 		else if(flags.length > 0 && flags[1])object = true;	
-		if(val.getDefWithPart(1)!=null)symbol = 'a';
-		else if(val.getDefWithPart(8)!=null)symbol = 'k';
+		
+		if(val.getDefWithPart(8)!=null)symbol = 'k';
+		else symbol = 'a';
 
 	}
 }

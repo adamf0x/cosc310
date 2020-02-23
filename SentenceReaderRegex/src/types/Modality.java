@@ -1,4 +1,8 @@
 package types;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 //word double array is an array for each word in the mode, the inner array being the possibilities for the person of the subject
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,15 +30,15 @@ public class Modality {
 	//can add possessive modes/voices as well. adding 's to indicate possession will have to be taken into account
 	static ArrayList<Person> pList = new ArrayList<Person>(Arrays.asList(new Person[]{	new Person(Word.getWordObj("I"), "first person, singular"),
 																						new Person(Word.getWordObj("You"), "second person"),
-																						new Person(Word.getWordObj("He"), "third person singular", 1),
-																						new Person(Word.getWordObj("She"), "third person singular", 2),																						
+																						new Person(Word.getWordObj("He"), "third person singular (M)", 1),
+																						new Person(Word.getWordObj("She"), "third person singular (F)", 2),																						
 																						new Person(Word.getWordObj("We"), "first person plural"),
 																						new Person(Word.getWordObj("They"), "third person plural"),
 																						new Person(Word.getWordObj("It"), "third person singular"),
 																						new Person(Word.getWordObj("My"), "first person singular possessive", 0, 1),
 																						new Person(Word.getWordObj("Your"), "second person possessive", 0, 1),
-																						new Person(Word.getWordObj("His"), "first person possessive", 1,1),
-																						new Person(Word.getWordObj("Her"), "first person possessive", 2,1),
+																						new Person(Word.getWordObj("His"), "first person possessive (M)", 1,1),
+																						new Person(Word.getWordObj("Her"), "first person possessive (F)", 2,1),
 																						new Person(Word.getWordObj("Our"), "first person possessive", 0, 1),
 																						new Person(Word.getWordObj("Their"), "first person possessive", 0, 1),
 																						new Person(Word.getWordObj("Everyone"), "third person universal"),
@@ -54,6 +58,40 @@ public class Modality {
 										new Voice("Interrogative", "qus?"), 
 										new Voice("Imperative", "yz?")
 	};
+	
+	public static ArrayList<String> mNames, fNames;
+	
+	public static boolean readBabyNames() {
+		mNames = new ArrayList<String>();
+		fNames = new ArrayList<String>();
+		try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("./src/words/babynames_sum.csv")))){
+			String inStr = in.readLine();
+			String[] prevVals = null;
+			while((inStr = in.readLine())!= null) {
+				String[] vals = inStr.split(",");
+				if(prevVals!=null && prevVals[0].compareTo(vals[0])==0) {
+					if(Integer.parseInt(prevVals[1]) > Integer.parseInt(vals[1]))
+						fNames.add(prevVals[0].toLowerCase());
+					else
+						mNames.add(vals[0].toLowerCase());					
+				}
+				else {
+					if(vals[2].compareTo("F")==0)
+						fNames.add(vals[0].toLowerCase());
+					else
+						mNames.add(vals[0].toLowerCase());
+				}
+				prevVals = vals;
+			}
+			
+			
+		}catch(IOException e) {
+			return false;
+		}
+		
+		
+		return true;
+	}
 	//I have to pass it the arguments taken from the auxiliary and the verb phrase. there should be one mode per auxiliary or one for any sentence without auxiliary
 	
 	public static Mode getModality(Sentence sentence) {
@@ -92,8 +130,8 @@ public class Modality {
 			for(Person p : Modality.pList) {
 				if(n.val.compareTo(p.pronoun) == 0)return p; //specific pronoun listed above
 			}
-			if(n.val.getVal().toLowerCase().compareTo("man")==0)return pList.get(2);  //he
-			else if(n.val.getVal().toLowerCase().compareTo("woman")==0)return pList.get(3);  //she
+			if(n.val.getVal().toLowerCase().compareTo("man")==0 || getSex(n.val.getVal().toLowerCase()) == 1)return pList.get(2);  //he
+			else if(n.val.getVal().toLowerCase().compareTo("woman")==0 || getSex(n.val.getVal().toLowerCase()) == 2)return pList.get(3);  //she
 			else if(n.val.getVal().endsWith("s")) return pList.get(5);  //they
 			else return pList.get(6);	//it
 		}	
@@ -108,6 +146,12 @@ public class Modality {
 		}
 		
 		return null;
+	}
+	
+	public static int getSex(String name) { //0 for unknown, 1 for male, 2 for female
+		if(mNames.contains(name))return 1;
+		else if (fNames.contains(name))return 2;
+		return 0;
 	}
 	
 	

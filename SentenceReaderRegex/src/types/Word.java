@@ -18,7 +18,7 @@ public class Word implements Comparable<Word>, Cloneable{
 	
 	private ArrayList<Def> defs;
 	private String val;
-	public int sPart;
+	public int sPart = 1; //in case it is a noun. 
 	
 	public Word(String v) {
 		this.defs = new ArrayList<Def>();
@@ -84,7 +84,7 @@ public class Word implements Comparable<Word>, Cloneable{
 		else if((temp=this.getPartWithDef(5))!=-1)sPart = temp;
 		
 		else if((temp=this.getPartWithDef(1))!=-1)sPart = temp;
-			
+		else sPart = 1; //default to noun (0 is preposition)	
 	}
 	
 	

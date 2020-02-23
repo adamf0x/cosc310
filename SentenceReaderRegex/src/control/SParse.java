@@ -34,10 +34,11 @@ public class SParse {	public static Scanner scn;
 		//writeWordCSV();
 		
 		readWordCSV();
+		Modality.readBabyNames();
 		//String testStr = "A man had to go to the park with his dog";//works
-		//String testStr = "The man might have to pay him tomorrow";
+		String testStr = "john will pay him tomorrow";
 		//String testStr = "Pay him tomorrow";
-		String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
+		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
 		if(!(endVal instanceof Sentence))endVal = new Sentence(new ArrayList<Node>(Arrays.asList(endVal)));
