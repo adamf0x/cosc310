@@ -9,5 +9,13 @@ public class NounPhrase extends Phrase{
 		symbol = 'z';
 	}
 	
+	public Noun getNoun() {
+		for(int i = 0; i < this.children.size(); i++) {
+			if(this.children.get(i) instanceof Noun) {
+				return (Noun) this.children.get(i);
+			}
+		}
+		return null;
+	}
 	
 }

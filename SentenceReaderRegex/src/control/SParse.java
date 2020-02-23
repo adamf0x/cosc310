@@ -35,22 +35,35 @@ public class SParse {	public static Scanner scn;
 		
 		readWordCSV();
 		//String testStr = "A man had to go to the park with his dog";//works
-		String testStr = "John could have paid him tomorrow";
-		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
+		//String testStr = "The man might have to pay him tomorrow";
+		//String testStr = "Pay him tomorrow";
+		String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
+		if(!(endVal instanceof Sentence))endVal = new Sentence(new ArrayList<Node>(Arrays.asList(endVal)));
 		Mode testMode = null;
+		Person testPerson = null;
+		Voice testVoice = null;
+		//change it so tht instead of returning the modality, etc it just mutates the sentence, so that the function can execute for compound sentences recursively
 		if((testMode = Modality.getModality((Sentence)endVal)) != null)System.out.println("\n\nmodality : " + testMode.toString());
+		if((testPerson = Modality.getPerson((Sentence)endVal)) != null)System.out.println("\n\nperson : " + testPerson.toString());
+		if((testVoice = Modality.getVoice((Sentence)endVal)) != null)System.out.println("\n\nvoice : " + testVoice.toString());
+		else { System.out.println("\n" + ((Sentence)endVal).getChildSymbolString());}
 		
 		int test = 0;
 		test ++;
 	}
-	//it appears that the definitions are not being recorded with multiple parts on the text file
+	/*The sentences will have to be translated into events that the "Chatbot" can interpret. a sentence with a compound subject, action or object 
+	*might be resolved into 2 or more events, which could be ordered relative to one another temporally. 
+	*The voice (inquisitive vs imperative or declarative should be determined in a class like the modality class, along with the person)
+	*thus the plural of a noun should be recognized as a certain "person" which can then be expressed using the appropriate pronoun.
+	*
+	*/
 	public static void getTextFromDB() {
 		conn = mysqlConnHelper.getConnection();
 		//verb phrase is the top level as far as phrases are concerned. these can contain other verb phrases, or noun and prep. phrases
 		//noun phrases and prepositional phrases can recursively contain one another
-		//sentences must contain a NP and a VP. AUXillary verbs are optional and change the tense, voice, etc
+		//sentences must contain a NP and a VP. AUXillary verbs are optional and change the tense, voice, etc. Imperative (commands) have an implied subject
 		//
 		 wList = new LinkedList<Word>();
 		 Word prevWord = null;
@@ -211,6 +224,7 @@ public class SParse {	public static Scanner scn;
 				case 15: n = new Pronoun(tW);break;
 				case 16: n = new Conjunction(tW);break;
 				case 20: n = new Auxiliary(tW);break;
+				case 21: n = new Interrogative(tW);break;
 			}
 			nList.add(n);
 		}

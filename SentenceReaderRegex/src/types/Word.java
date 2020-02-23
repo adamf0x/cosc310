@@ -12,7 +12,9 @@ public class Word implements Comparable<Word>, Cloneable{
 	public static String[] partList = {"prep.","n.","a.","v. t.","v. i.", "adv.","p. pr.", "p. p.","vb. n.",
 			"imp.","superl.", "pl.", "definite article.","interj.", "n sing.", "pron.", "conj.","poss. pr.", "obj."};
 	private static ArrayList<String> auxiliaries = new ArrayList<String>(Arrays.asList(new String[]{"is", "am", "are", "was", "were", "can","could","dare","do", "did",
-			"does","have","had","has","may","might","must","need","ought","shall", "should","will", "would"}));
+			"does","have","had","has","may","might","must","need","ought","shall", "should","will", "would", "been","be", "being"}));
+	
+	private static ArrayList<String> interrogatives = new ArrayList<String>(Arrays.asList(new String[] {"who", "what", "where", "when", "why", "how"}));
 	
 	private ArrayList<Def> defs;
 	private String val;
@@ -67,10 +69,12 @@ public class Word implements Comparable<Word>, Cloneable{
 	public void guessPart() {
 		int temp = -1;
 		if(auxiliaries.contains(this.val)) {sPart = 20;}
+		else if(interrogatives.contains(this.val)) {sPart = 21;}
 		else if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
-		else if((temp=this.getPartWithDef(9,6,7))!=-1)sPart = temp;
+		else if((temp=this.getPartWithDef(9,6))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(0))!=-1)sPart = temp;	
 		else if((temp=this.getPartWithDef(3,4))!=-1)sPart = temp;
+		else if((temp=this.getPartWithDef(7))!=-1)sPart = temp;
 		//else if((temp=this.getPartWithDef(3,4))!=-1 && this.getPartWithDef(1)==-1)sPart = temp; //I will assume this is a verb, but if it is found after a pronoun or determiner I will change it to a noun
 		else if((temp=this.getPartWithDef(15,18))!=-1)sPart = 15;											
 		else if((temp=this.getPartWithDef(8))!=-1)sPart = temp;
@@ -148,7 +152,7 @@ public class Word implements Comparable<Word>, Cloneable{
 	}
 	
 	public int compareTo(Word w) {
-		return this.val.compareTo(w.val);
+		return this.val.toLowerCase().compareTo(w.val.toLowerCase());
 	}
 	
 	//*****************************inner Definition Class

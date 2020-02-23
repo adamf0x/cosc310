@@ -2,23 +2,58 @@ package types;
 //word double array is an array for each word in the mode, the inner array being the possibilities for the person of the subject
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+//have to figure out how to integrate the word "to" in the "had to" and "have to" modes
+//could add a property to verb nodes to indicte that the infinitive is to be used (and thus it should be preceded by "to")
 public class Modality {
 	static ArrayList<Mode> mList = new ArrayList<Mode>(Arrays.asList(new Mode[]{new Mode("present", new Word[][] {new Word[] {new Word(3), new Word(4)}}),
-																				new Mode("past",new Word[][] {new Word[] {new Word(7)}}),
+																				new Mode("past",new Word[][] {new Word[] {new Word(7),new Word(9)}}),
 																				new Mode("present continuous",new Word[][] {new Word[]{Word.getWordObj("is"), Word.getWordObj("are")},new Word[] {new Word(8)}}),
 																				new Mode("past continuous",new Word[][] {new Word[]{Word.getWordObj("was"), Word.getWordObj("were")},new Word[] {new Word(8)}}),
-																				new Mode("present perfect",new Word[][] {new Word[]{Word.getWordObj("have")},new Word[]{new Word(7)}}),
-																				new Mode("past perfect",new Word[][] {new Word[]{Word.getWordObj("had")},new Word[]{new Word(7)}}),
+																				new Mode("present perfect",new Word[][] {new Word[]{Word.getWordObj("have")},new Word[]{Word.getWordObj("to")},new Word[]{new Word(3), new Word(4)}}),
+																				new Mode("past perfect",new Word[][] {new Word[]{Word.getWordObj("had")},new Word[]{Word.getWordObj("to")},new Word[]{new Word(3), new Word(4)}}),
 																				new Mode("simple future",new Word[][] {new Word[]{Word.getWordObj("will")},new Word[] {new Word(3), new Word(4)}}),
 																				new Mode("conditional present",new Word[][] {new Word[]{Word.getWordObj("would")},new Word[] {new Word(3), new Word(4)}}),
-																				new Mode("conditional past",new Word[][] {new Word[]{Word.getWordObj("would"),Word.getWordObj("have")},new Word[] {new Word(7)}}),
+																				new Mode("conditional past",new Word[][] {new Word[]{Word.getWordObj("would")},new Word[] {Word.getWordObj("have")},new Word[] {new Word(7),new Word(9)}}),
 																				new Mode("indefinite conditional present",new Word[][] {new Word[]{Word.getWordObj("could"), Word.getWordObj("might")},new Word[] {new Word(3), new Word(4)}}),
 																				new Mode("indefinite conditional past",new Word[][] {new Word[]{Word.getWordObj("could"), Word.getWordObj("might")},new Word[] {Word.getWordObj("have")},new Word[] {new Word(7),new Word(9)}}),
+																				new Mode("indefinite conditional future",new Word[][] {new Word[]{Word.getWordObj("could"), Word.getWordObj("might")},new Word[] {Word.getWordObj("have")}, new Word[] {new Word("to")},new Word[] {new Word(3),new Word(4)}}),
+																				new Mode("continuous conditional present",new Word[][] {new Word[]{Word.getWordObj("could"), Word.getWordObj("might")}, new Word[] {new Word("be")}, new Word[] {new Word(8)}}),
+																				new Mode("continuous conditional past",new Word[][] {new Word[]{Word.getWordObj("could"), Word.getWordObj("might")},new Word[] {Word.getWordObj("have")},new Word[] {new Word("been")},new Word[] {new Word(8)}}),
 																				new Mode("perfect participle",new Word[][] {new Word[]{Word.getWordObj("having")},new Word[] {new Word(7)}}),
 	})); 
+	//can add possessive modes/voices as well. adding 's to indicate possession will have to be taken into account
+	static ArrayList<Person> pList = new ArrayList<Person>(Arrays.asList(new Person[]{	new Person(Word.getWordObj("I"), "first person, singular"),
+																						new Person(Word.getWordObj("You"), "second person"),
+																						new Person(Word.getWordObj("He"), "third person singular", 1),
+																						new Person(Word.getWordObj("She"), "third person singular", 2),																						
+																						new Person(Word.getWordObj("We"), "first person plural"),
+																						new Person(Word.getWordObj("They"), "third person plural"),
+																						new Person(Word.getWordObj("It"), "third person singular"),
+																						new Person(Word.getWordObj("My"), "first person singular possessive", 0, 1),
+																						new Person(Word.getWordObj("Your"), "second person possessive", 0, 1),
+																						new Person(Word.getWordObj("His"), "first person possessive", 1,1),
+																						new Person(Word.getWordObj("Her"), "first person possessive", 2,1),
+																						new Person(Word.getWordObj("Our"), "first person possessive", 0, 1),
+																						new Person(Word.getWordObj("Their"), "first person possessive", 0, 1),
+																						new Person(Word.getWordObj("Everyone"), "third person universal"),
+																						new Person(Word.getWordObj("Someone"), "third person existential"),
+																						new Person(Word.getWordObj("Who"), "third person interrogative", 0, 2),
+																						new Person(Word.getWordObj("Which"), "nonpersonal interrogative", 0, 2),
+																						new Person(Word.getWordObj("Where"), "spatial interrogative", 0, 2),
+																						new Person(Word.getWordObj("When"), "temporal interrogative", 0, 2),
+																						new Person(Word.getWordObj("Why"), "general interrogative", 0, 2), //this replaces a sentence, not a noun
+																						new Person(Word.getWordObj("How"), "descriptive interrogative", 0, 2), //this replaces a sentence, not a noun
+	
+	}));
 	
 	
+	//the imperative voice is always referring to the second person (singular or plural), and always uses the present tense/ simple mode
+	static Voice[] vList = new Voice[] {new Voice("Declarative", "zu?y"),
+										new Voice("Interrogative", "qus?"), 
+										new Voice("Imperative", "yz?")
+	};
 	//I have to pass it the arguments taken from the auxiliary and the verb phrase. there should be one mode per auxiliary or one for any sentence without auxiliary
 	
 	public static Mode getModality(Sentence sentence) {
@@ -27,7 +62,8 @@ public class Modality {
 		boolean b1 = true;
 		int auxLength = 0;
 		AuxiliaryPhrase ap = null;
-		if(sentence.children.get(0) instanceof Sentence)return null; //has to be called on individual (leaf) sentences
+		if(sentence.children.get(0) instanceof Sentence || sentence.children.size() < 2)return null; //has to be called on individual (leaf) sentences
+		
 		if((ap=sentence.getAuxPhrase())!=null){auxLength = ap.children.size();}
 		Word[] matchThis = new Word[auxLength+1];
 		for(int i = 0; i < auxLength; i++) {
@@ -48,6 +84,32 @@ public class Modality {
 		if(b1)return rVal;
 		return null;
 	}
+	
+	public static Person getPerson(Sentence sentence) {
+		
+		Noun n = null;
+		if(sentence.getSubject() != null && (n=sentence.getSubject().getNoun())!=null) {
+			for(Person p : Modality.pList) {
+				if(n.val.compareTo(p.pronoun) == 0)return p; //specific pronoun listed above
+			}
+			if(n.val.getVal().toLowerCase().compareTo("man")==0)return pList.get(2);  //he
+			else if(n.val.getVal().toLowerCase().compareTo("woman")==0)return pList.get(3);  //she
+			else if(n.val.getVal().endsWith("s")) return pList.get(5);  //they
+			else return pList.get(6);	//it
+		}	
+		return null;
+	}
+	
+	public static Voice getVoice(Sentence sentence) {
+		for(Voice v : vList) {
+			Pattern endP = Pattern.compile(v.ptrn);
+			Matcher endM = endP.matcher(sentence.getChildSymbolString());
+			if(endM.matches())return v;
+		}
+		
+		return null;
+	}
+	
 	
 	public static boolean match(Word m1, Word[] m2) { //match a single word as first argument with any Word in second argument
 		for(Word w2: m2) {
