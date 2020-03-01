@@ -15,20 +15,57 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-public class SParse {	
+
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+public class SParse extends Application{	
 	public static Scanner scn;	
 	public static LinkedList<Word> wList;
 	public static Word[] wListA;
-
+	static BorderPane window = new BorderPane();
+	static VBox inputArea = new VBox();
+	static TextField input = new TextField();
 	
-	public static void main(String[] args) {		
+	public void start(Stage theStage){
+		Button submit = new Button("Submit");
+		input.setMinHeight(50);
+		input.setMinWidth(400);
+		inputArea.getChildren().add(input);
+		inputArea.getChildren().add(submit);
+		window.getChildren().add(inputArea);
+		theStage.setScene(new Scene(window));
+		theStage.show();
+		
+		submit.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				Parse(input.getText());
+				
+			}
+		});
 		//getTextFromDB();		
 		//writeWordCSV();
 		
+	}
+	
+	public static void Parse(String testStr) {
 		readWordCSV();
 		Modality.readBabyNames();
 		//String testStr = "A man had to go to the park with his dog";//works
+<<<<<<< HEAD
 		//String testStr = "john will pay him at 1230";
+=======
+		//String testStr = "john will pay him tomorrow";
+>>>>>>> 861a54928f2f884c367f4009a50e497bb84c960f
 		//String testStr = "Pay him tomorrow";
 		String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
