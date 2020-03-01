@@ -1,0 +1,11 @@
+greeting 0
+whereto 0
+loc_known 1
+loc_unknown 1
+returning_q 1
+inahurry_q 0
+slowride 1
+fastride 1
+askweather 0
+praisecomfort 1
+recallstorm 1

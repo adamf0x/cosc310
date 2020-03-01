@@ -20,4 +20,8 @@ public class Phrase extends Node{
 		rVal = rVal.substring(0, rVal.length()-2) + "}";
 		return rVal;
 	}
+	
+	public ArrayList<Node> getChildren(){
+		return this.children;
+	}
 }

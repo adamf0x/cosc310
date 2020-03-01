@@ -68,7 +68,7 @@ public class Word implements Comparable<Word>, Cloneable{
 	
 	public void guessPart() {
 		int temp = -1;
-		if(auxiliaries.contains(this.val)) {sPart = 20;}
+		if(auxiliaries.contains(this.val)) {sPart = 20;}		
 		else if(interrogatives.contains(this.val)) {sPart = 21;}
 		else if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(9,6))!=-1)sPart = temp;
@@ -132,7 +132,13 @@ public class Word implements Comparable<Word>, Cloneable{
 		if((ind = Arrays.binarySearch(SParse.wListA,new Word(str)))> -1) {
 			return SParse.wListA[ind];
 		}
-		return new Word(str, "n.", "Proper Name");
+		
+		else if(str.matches(".*([0-9]{2}?:[0-9]{2}?|[0-9]{1,}?(am|AM|pm|PM)).*")) {
+			return new Word(str, "n.", "time"); //if its a time
+			}
+		else if(str.matches("[0-9]+")) {	return new Word(str, "a.", "number");}//in case its not
+		
+		else return new Word(str, "n.", "proper name"); 
 	}
 	
 	public String toString() {
@@ -145,6 +151,13 @@ public class Word implements Comparable<Word>, Cloneable{
 			}		
 		}
 		return rVal;
+	}
+	
+	public Def locateInDef(String fStr) {
+		for(Def d: defs) {
+			if(d.def.contains(fStr))return d;
+		}
+		return null;
 	}
 	
 	public Word clone() {

@@ -28,11 +28,11 @@ public class SParse {
 		readWordCSV();
 		Modality.readBabyNames();
 		//String testStr = "A man had to go to the park with his dog";//works
-		String testStr = "john will pay him tomorrow";
+		//String testStr = "john will pay him at 1230";
 		//String testStr = "Pay him tomorrow";
-		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
+		String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
-		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0);
+		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0, true);
 		if(!(endVal instanceof Sentence))endVal = new Sentence(new ArrayList<Node>(Arrays.asList(endVal)));
 		Mode testMode = null;
 		Person testPerson = null;
@@ -53,6 +53,11 @@ public class SParse {
 	*
 	*/
 	
+	
+	public static void init() {
+		readWordCSV();
+		Modality.readBabyNames();
+	}
 	
 	public static void readWordCSV() {
 		try (
@@ -108,7 +113,7 @@ public class SParse {
 	
 	
 	
-	public static Node getPhraseTreeFromString(String str, int level) {	
+	public static Node getPhraseTreeFromString(String str, int level, boolean verboss) {	
 		String[] temp = str.split(" ");
 		ArrayList<Node> nList = new ArrayList<Node>(temp.length);
 		Word tW = null;
@@ -137,21 +142,21 @@ public class SParse {
 			}
 			nList.add(n);
 		}
-		//need to change any ambiguous words like dog into nouns in the case that they are used after a pronoun
+		//need to change any ambiguous words like dog into nouns in the case that they are used after a possessive pronoun
 		
 		nList = adjustWordType(nList);
 		
 		
-		//hopefully now it wont make phrases out of single adjectives and adverbs. tht should be the standard for all types.
+		//hopefully now it wont make phrases out of single adjectives and adverbs.
 		// Patterns reversed char-wise, listed in order as follows:
-		//adverb,adjective, preposition,noun,verb,sentence
+		//auxiliary,adverb,adjective, preposition,noun,verb,sentence
 		String[] pList = {	"b?p+",
 							"([bx]?dc+|[bx]dc*|v(lv)+)",
 							"([bx]?cd+|[bx]cd*|w(lw)+)",
 							"([akzm]b|x(lx)+)",
 							"([bx]?[ma][wc]*[ne]?|z(lz)+)",
 							"([dv]*[bx]?[akzm]?[f-j]|y(ly)+)",
-							"(u?yz|yu?z|yzu?|s(ls)+)",   				//inquisitive, declarative, conditional, compound sentence
+							"(u?yz|yu?z|yzu?|s(ls)+)",   				//interrogative, declarative, conditional, compound sentence
 							};
 		String pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
 		System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
@@ -163,7 +168,7 @@ public class SParse {
 				Pattern ptrn = Pattern.compile(pList[i]); 
 				Matcher m = ptrn.matcher(pStr);
 				if(m.find()) {
-					System.out.print("\n\nfound match: start: " +m.start() + ", end: "+ m.end() + " with pattern#: " + i + "\t");
+					if(verboss)System.out.print("\n\nfound match: start: " +m.start() + ", end: "+ m.end() + " with pattern#: " + i + "\t");
 					int len = m.end() - m.start();
 					Phrase phr = null;
 					ArrayList<Node> tempList = new ArrayList<Node>(len);
@@ -181,7 +186,7 @@ public class SParse {
 					}
 					nList.add(nList.size()-m.start(), phr);
 					pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
-					System.out.print(Arrays.toString(nList.toArray())+ " :: " + pStr + ", i = " + i + ", count = " + count);
+					if(verboss)System.out.print(Arrays.toString(nList.toArray())+ " :: " + pStr + ", i = " + i + ", count = " + count);
 					break;
 				}
 				

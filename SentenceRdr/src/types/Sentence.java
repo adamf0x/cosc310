@@ -46,4 +46,15 @@ public class Sentence extends Phrase{
 		}
 		return rVal;
 	}
+	
+	
+	public Noun getInnerSubj() {
+		for(Node n : children) {
+			if (n instanceof NounPhrase) {				
+				return ((NounPhrase) n).getNoun();				
+			}
+		}
+		return null;
+	}
+	
 }

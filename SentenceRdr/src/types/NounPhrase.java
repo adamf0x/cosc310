@@ -18,4 +18,13 @@ public class NounPhrase extends Phrase{
 		return null;
 	}
 	
+	public PrepPhrase getPrepPhrase() {
+		for(int i = 0; i < this.children.size(); i++) {
+			if(this.children.get(i) instanceof PrepPhrase) {
+				return (PrepPhrase) this.children.get(i);
+			}
+		}
+		return null;
+	}
+	
 }

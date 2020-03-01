@@ -1,7 +1,7 @@
 package types;
 
 public class Noun extends Node{
-	boolean subject, object;
+	boolean subject, object, isNumeral;
 
 	//nouns can be either the subject of an action or the object of it
 	public Noun(Word val, boolean... flags) {
@@ -11,6 +11,7 @@ public class Noun extends Node{
 		
 		if(val.getDefWithPart(8)!=null)symbol = 'k';
 		else symbol = 'a';
-
+		if(val.getVal().matches(".*[0-9]+.*"))isNumeral = true;
 	}
+
 }
