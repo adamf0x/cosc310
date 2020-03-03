@@ -22,7 +22,11 @@ public class StateNode {
 		statement = new Stmt(name);
 		getQueues();
 	}
-	
+	/*endpoint is 0 based.
+	 * 
+	 * 
+	 * 
+	 */
 	public void getQueues() { //loads csv and pattern strings from files based on the name of the statement node
 		outgoingLinks = new ArrayList<UserQueue>();		
 		try (
@@ -32,16 +36,17 @@ public class StateNode {
 				String temp1 = scn.nextLine();
 				String[] temp11 = temp1.split(" ");
 				int temp  = Integer.parseInt(temp11[0]);  //type of match:: 0 for csv, 1 for regex, 2 for interNode (no matching)
-				int ep =Integer.parseInt(temp11[1]); 	// id of node which this links to
+				int ep =Integer.parseInt(temp11[1]); 	// endpoint: id of node which this links to
 				String temp2 = scn.nextLine(); //the match string (csv or regex)
 				if(temp == 0) { //csv match
-					int[][] csvMatch = new int[3][];
+					int[][] csvMatch = new int[3][];  //Mode, Person, Voice. As few as 0 or as many as all of them can match.
 					String[] matchList = temp2.split(";");
 					for(int i = 0; i < matchList.length; i++) { //should be length 3
 						String[] c = matchList[i].split(",");
 						csvMatch[i] = new int[c.length];
 						for(int j = 0; j < c.length; j++) {
-							csvMatch[i][j] = Integer.parseInt(c[j]);
+							if(c[j].length() > 0)csvMatch[i][j] = Integer.parseInt(c[j]);
+							else csvMatch[i][j] = -1;
 						}
 					}				
 					outgoingLinks.add(new UserQueue(ep,id,null,csvMatch));

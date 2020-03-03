@@ -15,59 +15,25 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-public class SParse extends Application{	
+public class SParse {	
 	public static Scanner scn;	
 	public static LinkedList<Word> wList;
 	public static Word[] wListA;
-	static BorderPane window = new BorderPane();
-	static VBox inputArea = new VBox();
-	static TextField input = new TextField();
+
 	
-	public void start(Stage theStage){
-		Button submit = new Button("Submit");
-		input.setMinHeight(50);
-		input.setMinWidth(400);
-		inputArea.getChildren().add(input);
-		inputArea.getChildren().add(submit);
-		window.getChildren().add(inputArea);
-		theStage.setScene(new Scene(window));
-		theStage.show();
-		
-		submit.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				Parse(input.getText());
-				
-			}
-		});
+	public static void main(String[] args) {		
 		//getTextFromDB();		
 		//writeWordCSV();
 		
-	}
-	
-	public static void Parse(String testStr) {
 		readWordCSV();
 		Modality.readBabyNames();
 		//String testStr = "A man had to go to the park with his dog";//works
-<<<<<<< HEAD
 		//String testStr = "john will pay him at 1230";
-=======
-		//String testStr = "john will pay him tomorrow";
->>>>>>> 861a54928f2f884c367f4009a50e497bb84c960f
 		//String testStr = "Pay him tomorrow";
-		String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
+		//String testStr = "run"; //works
+		String testStr = "hello";
+		
+		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		
 		Node endVal = getPhraseTreeFromString(testStr.toLowerCase(), 0, true);
 		if(!(endVal instanceof Sentence))endVal = new Sentence(new ArrayList<Node>(Arrays.asList(endVal)));
@@ -122,41 +88,12 @@ public class SParse extends Application{
 		 wList.toArray(wListA);
 	}
 	
-	
-	public static void loadTextFromObjects() { //broken
-		try (
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./src/words/objectlist.txt")));
-			) {
-				wList = new LinkedList<Word>();
-				String ln = "";
-				Word prevWord = null;
-				while((ln = br.readLine())!=null) {
-					if(ln.charAt(0)=='@') {
-						wList.add((prevWord= new Word(ln.substring(1,ln.indexOf(':')))));
-					}
-					else if(ln.charAt(0)=='>') {	
-						String dStr = ln;
-						while((ln = br.readLine())!=null && ln.charAt(ln.length()-1)!='*') dStr+=ln;
-						prevWord.addDef(dStr.substring(dStr.indexOf(':')+2) , dStr.substring(2,dStr.indexOf('<')).trim());
-					}
-				}
-				
-				
-			}catch (IOException e) {			
-				e.printStackTrace();
-			}
-		
-	}
-	
-	
-	
 	public static Node getPhraseTreeFromString(String str, int level, boolean verboss) {	
 		String[] temp = str.split(" ");
 		ArrayList<Node> nList = new ArrayList<Node>(temp.length);
 		Word tW = null;
 		Node n = null;
-		for(String s : temp) {
-			
+		for(String s : temp) {			
 			tW = Word.getWordObj(s);
 			switch(tW.sPart) {
 				case 0: n = new Preposition(tW);break;
@@ -170,6 +107,7 @@ public class SParse extends Application{
 				case 8: n = new Noun(tW);break;
 				case 9: n = new Verb(tW);break;
 				case 12: n = new Determiner(tW);break;
+				case 13: n = new Interjection(tW);break;
 				case 14: n = new Noun(tW);break;
 				case 11: n = new Noun(tW);break;
 				case 15: n = new Pronoun(tW);break;
@@ -186,14 +124,15 @@ public class SParse extends Application{
 		
 		//hopefully now it wont make phrases out of single adjectives and adverbs.
 		// Patterns reversed char-wise, listed in order as follows:
-		//auxiliary,adverb,adjective, preposition,noun,verb,sentence
-		String[] pList = {	"b?p+",
+		//interjection,auxiliary,adverb,adjective, preposition,noun,verb,sentence
+		String[] pList = {	"o+",
+							"b?p+",
 							"([bx]?dc+|[bx]dc*|v(lv)+)",
 							"([bx]?cd+|[bx]cd*|w(lw)+)",
 							"([akzm]b|x(lx)+)",
 							"([bx]?[ma][wc]*[ne]?|z(lz)+)",
 							"([dv]*[bx]?[akzm]?[f-j]|y(ly)+)",
-							"(u?yz|yu?z|yzu?|s(ls)+)",   				//interrogative, declarative, conditional, compound sentence
+							"(z|t|u?yz|yu?z|^yz?u?$|s(ls)+)",   				//interrogative, declarative, conditional, compound sentence
 							};
 		String pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
 		System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
@@ -213,13 +152,14 @@ public class SParse extends Application{
 					for(int j = 0; j < len; j++) {
 						tempList.add(0,nList.remove(lSize - m.start()-j));
 					}
-					switch(i) {	case 0: phr = new AuxiliaryPhrase(tempList);break;
-								case 1:	 phr = new AdverbPhrase(tempList);break;
-								case 2:  phr = new AdjectivePhrase(tempList);break;
-								case 3:  phr = new PrepPhrase(tempList);break;
-								case 4:  phr = new NounPhrase(tempList);break;
-								case 5:  phr = new VerbPhrase(tempList);break;	
-								case 6:  phr = new Sentence(tempList);break;
+					switch(i) {	case 0: phr = new InterjectionPhrase(tempList);break;
+								case 1: phr = new AuxiliaryPhrase(tempList);break;
+								case 2:	 phr = new AdverbPhrase(tempList);break;
+								case 3:  phr = new AdjectivePhrase(tempList);break;
+								case 4:  phr = new PrepPhrase(tempList);break;
+								case 5:  phr = new NounPhrase(tempList);break;
+								case 6:  phr = new VerbPhrase(tempList);break;	
+								case 7:  phr = new Sentence(tempList);break;
 					}
 					nList.add(nList.size()-m.start(), phr);
 					pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
@@ -252,7 +192,6 @@ public class SParse extends Application{
 	}
 	
 	
-	
 	public static String getRCharStringFromList(ArrayList<Node> nList) {
 		String rVal = "";
 		for(Node n: nList) {
@@ -261,9 +200,6 @@ public class SParse extends Application{
 		return rVal;
 	}
 	
-	
-	
-
 	
 	/*public static Word getWordObj(String str) {
 		for(Word w: wList) {

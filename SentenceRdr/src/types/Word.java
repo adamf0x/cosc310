@@ -68,8 +68,11 @@ public class Word implements Comparable<Word>, Cloneable{
 	
 	public void guessPart() {
 		int temp = -1;
-		if(auxiliaries.contains(this.val)) {sPart = 20;}		
-		else if(interrogatives.contains(this.val)) {sPart = 21;}
+		if(auxiliaries.contains(this.val)) {sPart = 20;}
+		else if((temp=this.getPartWithDef(13))!=-1) {
+			sPart = temp;
+		}
+		else if(interrogatives.contains(this.val))sPart = 21;
 		else if((temp=this.getPartWithDef(16))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(9,6))!=-1)sPart = temp;
 		else if((temp=this.getPartWithDef(0))!=-1)sPart = temp;	
@@ -133,8 +136,8 @@ public class Word implements Comparable<Word>, Cloneable{
 			return SParse.wListA[ind];
 		}
 		
-		else if(str.matches(".*([0-9]{2}?:[0-9]{2}?|[0-9]{1,}?(am|AM|pm|PM)).*")) {
-			return new Word(str, "n.", "time"); //if its a time
+		else if(str.matches(".*([0-9]{2}:?[0-9]{2}|[0-9]{1,}(am|AM|pm|PM)).*")) {
+			return new Word(str, "n.", "time"); //if its a time. This doesnt appear to work for some reason. attempted a fix (not tested)
 			}
 		else if(str.matches("[0-9]+")) {	return new Word(str, "a.", "number");}//in case its not
 		

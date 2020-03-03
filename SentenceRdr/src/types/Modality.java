@@ -42,8 +42,7 @@ public class Modality {
 																						new Person(Word.getWordObj("His"), "first person possessive (M)",11, 1,1),
 																						new Person(Word.getWordObj("Her"), "first person possessive (F)",12, 2,1),
 																						new Person(Word.getWordObj("Our"), "first person possessive",13, 0, 1),
-																						new Person(Word.getWordObj("Their"), "first person possessive",14, 0, 1),
-																						
+																						new Person(Word.getWordObj("Their"), "first person possessive",14, 0, 1),																						
 																						new Person(Word.getWordObj("Who"), "third person interrogative",15, 0, 2),
 																						new Person(Word.getWordObj("Which"), "nonpersonal interrogative",16, 0, 2),
 																						new Person(Word.getWordObj("Where"), "spatial interrogative",17, 0, 2),
@@ -57,7 +56,8 @@ public class Modality {
 	//the imperative voice is always referring to the second person (singular or plural), and always uses the present tense/ simple mode
 	static Voice[] vList = new Voice[] {new Voice("Declarative", "zu?y",0),
 										new Voice("Interrogative", "qus?",1), 
-										new Voice("Imperative", "yz?",2)
+										new Voice("Imperative", "yz?",2),
+										new Voice("Salutative", ".*t.*",3)
 	};
 	
 	public static ArrayList<String> mNames, fNames;
