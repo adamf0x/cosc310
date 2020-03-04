@@ -28,8 +28,7 @@ public class Word implements Comparable<Word>, Cloneable{
 	public Word(String v,String d , String p) {
 		this.defs = new ArrayList<Def>(1); //start with 1 to save memory
 		defs.add(new Def(d,p));
-		val = v;
-		
+		val = v;		
 	}
 	public Word(String v, ArrayList<Def> de) {
 		val = v;

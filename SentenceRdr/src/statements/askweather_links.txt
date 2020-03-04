@@ -1,0 +1,6 @@
+1 9
+.*(cold|wet).*
+1 10
+.*(storm|wind).*
+1 13
+.*(not (so)? bad|could be worse|nice|.).*

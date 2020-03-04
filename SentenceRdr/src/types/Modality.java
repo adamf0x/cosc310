@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 //have to figure out how to integrate the word "to" in the "had to" and "have to" modes
-//could add a property to verb nodes to indicte that the infinitive is to be used (and thus it should be preceded by "to")
+//could add a property to verb nodes to indicate that the infinitive is to be used (and thus it should be preceded by "to")
 public class Modality {
 	static ArrayList<Mode> mList = new ArrayList<Mode>(Arrays.asList(new Mode[]{new Mode("present", new Word[][] {new Word[] {new Word(3), new Word(4)}},0),
 																				new Mode("past",new Word[][] {new Word[] {new Word(7),new Word(9)}},1),

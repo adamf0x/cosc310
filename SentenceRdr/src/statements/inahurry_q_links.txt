@@ -1,4 +1,4 @@
 1 6
-slow
+.*(slow|no|take your time).*
 1 7
-fast
+.*(fast|yes|asap|floor it).*

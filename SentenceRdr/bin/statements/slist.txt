@@ -9,3 +9,6 @@ fastride 1
 askweather 0
 praisecomfort 1
 recallstorm 1
+gladtobehome 1
+enjoyyourtrip 1
+niceweather 1

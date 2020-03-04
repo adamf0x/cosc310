@@ -1,0 +1,6 @@
+1 18
+.*(country|western).*
+1 19
+.*(the)? beach.*
+1 20
+.*
