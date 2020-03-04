@@ -1,6 +1,6 @@
 1 2
-store
-1 3
-play
+.*(store|dive bar|theater|mall).*
 1 4
-airport
+.*(airport|bus station|harbour).*
+1 3
+.*

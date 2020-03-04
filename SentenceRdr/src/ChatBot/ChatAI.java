@@ -18,28 +18,14 @@ import types.Node;
 public class ChatAI {
 	public ArrayList<StateNode> sList;
 	public Scanner scn;
+	int curr;
 	
 	public ChatAI() {
 		SParse.init();
 		sList = new ArrayList<StateNode>();
-		scn = new Scanner(System.in);
-		init();int curr = 0;
-		StateNode sn;
+		init();
+		this.curr = 0;
 		
-		
-		while(curr != -1) {
-			sn = sList.get(curr);
-			String out = sn.statement.getRandomOpt();
-			makeStatement(out);
-			if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
-				String inp = scn.nextLine();
-				Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
-				curr = sn.testInpForQueues(inp, endVal).traverse();	
-			}
-			else {
-				curr = sn.outgoingLinks.get(0).traverse(); //in this case there is only 1 link, so the next node is assumed
-			}
-		}
 	}
 	
 	public void init() {		
@@ -68,8 +54,19 @@ public class ChatAI {
 		return null;
 	}
 	
-	public void makeStatement(String str) {
-		System.out.println("Chat AI: " + str);
+	public String genResponse(String inp) {
+		StateNode sn = sList.get(curr);
+		String out = sn.statement.getRandomOpt();
+		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
+			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
+			curr = sn.testInpForQueues(inp, endVal).traverse();	
+		}
+		else {
+			curr = sn.outgoingLinks.get(0).traverse(); //in this case there is only 1 link, so the next node is assumed
+		}
+		
+		return out;
+		
 	}
 	
 	
