@@ -1,0 +1,8 @@
+1 22
+.*(student|studying|college|university|school).*
+1 23
+.*(doctor|lawyer|engineer|.+ist|teacher|professor|officer|rep(.|resentative)).*
+0 25
+1,3;;
+1 24
+.*
