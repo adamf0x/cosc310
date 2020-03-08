@@ -3,21 +3,8 @@ package control;
 import ChatBot.ChatAI;
 
 import types.*;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -29,12 +16,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+
 import javafx.stage.Stage;
 public class TestRun extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	private static TestRun singleton;
 	public static Scanner scn;	
 	public static LinkedList<Word> wList;
 	public static Word[] wListA;
@@ -67,13 +55,14 @@ public class TestRun extends Application {
 		theStage.show();
 		ChatAI AI = new ChatAI();
 		
+		
 		//handle click of the submit button
 		submit.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 		public void handle(MouseEvent arg0) {
 				output.appendText("You : " + input.getText() + "\n\n");
 				System.out.println(input.getText());
-				output.appendText("Driver: " + AI.generateResponse(input.getText())  + "\n\n");
+				AI.generateResponse(input.getText());
 				input.clear();
 				count++;
 			}
@@ -82,14 +71,29 @@ public class TestRun extends Application {
 		input.setOnKeyPressed(e -> {
 		    if (e.getCode() == KeyCode.ENTER) {
 		    	output.appendText("You : " + input.getText() + "\n\n");
-				output.appendText("Driver: " + AI.generateResponse(input.getText())  + "\n\n");
+				AI.generateResponse(input.getText());
 				input.clear();
 				count++;
 		    }
 		});
-		if(AI.sn != null && AI.sn.interNode) {
+		/*if(AI.sn != null && AI.sn.interNode) {
 			output.appendText(AI.generateResponse(""));
-		}
+		}*/
+	}
+	
+	public static TestRun getInstance() {
+		if(singleton==null)singleton = new TestRun();
+		return singleton;
+	}
+	
+	public void addTextToWindow(String text) {
+		this.output.appendText(text);
+	}
+	
+	public String clearText() {
+		String rVal = output.getText();
+		output.clear();
+		return rVal;
 	}
 	
 

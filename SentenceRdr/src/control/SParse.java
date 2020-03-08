@@ -135,7 +135,7 @@ public class SParse {
 							"(z|t|u?yz|yu?z|^yz?u?$|s(ls)+)",   				//interrogative, declarative, conditional, compound sentence
 							};
 		String pStr = new StringBuilder(getRCharStringFromList(nList)).reverse().toString();
-		System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
+		if(verboss)System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t" + pStr);
 		Pattern endP = Pattern.compile("^[wxyz]+$");
 		Matcher endM = endP.matcher(pStr);
 		int count = 0;

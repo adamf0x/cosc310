@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import control.SParse;
+import control.TestRun;
 import types.Node;
 
 /*the graph works as follows:
@@ -45,7 +46,7 @@ public class ChatAI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		makeStatement(sList.get(0).statement.getRandomOpt());
 		
 	}
 	
@@ -55,24 +56,38 @@ public class ChatAI {
 	}
 	
 	public void makeStatement(String str) {
-		System.out.println("Chat AI: " + str);
+		TestRun.getInstance().addTextToWindow("Driver: " + str + "\n");
 	}
-	public String generateResponse(String inp) {
-		if(inp.equals("")) {
-			curr = sn.id;
-			return "Sorry I dont know how to respond to that";
-		}
-		sn = sList.get(curr);
-		String out = sn.statement.getRandomOpt();
-		makeStatement(out);
+	
+	public void generateResponse(String inp) {	
+		if(curr == -1)return;
+		sn = sList.get(curr);		
 		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
+			
 			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
-			curr = sn.testInpForQueues(inp, endVal).traverse();	
+			UserQueue next = sn.testInpForQueues(inp, endVal);
+			if(next != null) {
+				curr = sn.testInpForQueues(inp, endVal).traverse();	
+				sn = sList.get(curr);
+				makeStatement(sList.get(curr).statement.getRandomOpt());
+				while(curr != -1 && sn.interNode) {
+					curr = sn.outgoingLinks.get(0).traverse();
+					if(curr == -1)return;
+					sn = sList.get(curr); //in this case there is only 1 link, so the next node is assumed	
+					makeStatement(sList.get(curr).statement.getRandomOpt());
+				}
+			}
+			else {
+				makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
+			}
 		}
-		else {
-			curr = sn.outgoingLinks.get(0).traverse(); //in this case there is only 1 link, so the next node is assumed
-		}
-		return out;
+		/*else {
+			makeStatement(sList.get(curr).statement.getRandomOpt());
+			curr = sn.outgoingLinks.get(0).traverse(); //in this case there is only 1 link, so the next node is assumed	
+		}*/
+		//makeStatement(sList.get(curr).statement.getRandomOpt());*/
+		return;
+		//return out;
 	}
 	
 }
