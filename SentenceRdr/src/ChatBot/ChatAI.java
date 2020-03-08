@@ -19,7 +19,7 @@ import types.Node;
 public class ChatAI {
 	public ArrayList<StateNode> sList;
 	public Scanner scn;
-	int curr =0;
+	public int curr =0;
 	public StateNode sn;
 	
 	public ChatAI() {
@@ -56,14 +56,14 @@ public class ChatAI {
 	}
 	
 	public void makeStatement(String str) {
-		TestRun.getInstance().addTextToWindow("Driver: " + str + "\n\n");
+		TestRun.getInstance().addTextToWindow("Driver: " + str + "\n");
+		TestRun.getInstance().addTextToWindow("current link: " + curr);
 	}
 	
 	public void generateResponse(String inp) {	
 		if(curr == -1)return;
-		sn = sList.get(curr);		
+		sn = sList.get(curr);
 		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
-			
 			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
 			UserQueue next = sn.testInpForQueues(inp, endVal);
 			if(next != null) {
@@ -80,6 +80,11 @@ public class ChatAI {
 			else {
 				makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
 			}
+		}
+		else if(curr == 26) {
+			System.out.println("finished with this passenger");
+			curr = 0;
+			makeStatement("Thanks again for choosing EZ cabs!");
 		}
 		/*else {
 			makeStatement(sList.get(curr).statement.getRandomOpt());

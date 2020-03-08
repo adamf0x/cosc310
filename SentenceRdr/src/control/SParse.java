@@ -21,7 +21,7 @@ public class SParse {
 	public static Word[] wListA;
 
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {	
 		//getTextFromDB();		
 		//writeWordCSV();
 		
