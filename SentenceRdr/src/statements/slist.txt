@@ -2,7 +2,7 @@ greeting 0
 whereto 0
 loc_known 1
 loc_unknown 1
-returning_q 1
+returning_q 0
 inahurry_q 0
 slowride 1
 fastride 1
@@ -25,3 +25,4 @@ occupationprofessional 1
 occupationworker 1
 occupationretired 1
 destinationreached 1
+radiorap 1

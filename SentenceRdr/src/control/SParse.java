@@ -172,7 +172,8 @@ public class SParse {
 		}
 		
 		
-		return nList.get(0);
+		if(nList.get(0) instanceof Sentence)return nList.get(0);
+		else return new Sentence(new ArrayList<Node>(Arrays.asList(new Node[] {nList.get(0)})));
 		
 	}
 	
