@@ -1,6 +1,6 @@
 1 9
-.*(cold|wet).*
+.*(cold|wet|terrible|bad).*
 1 10
-.*(storm|wind).*
+.*(storm|wind|terrible|bad).*
 1 13
 .*(not (so)? bad|could be worse|nice|.).*

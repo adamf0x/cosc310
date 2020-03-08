@@ -31,7 +31,8 @@ public class SParse {
 		//String testStr = "john will pay him at 1230";
 		//String testStr = "Pay him tomorrow";
 		//String testStr = "run"; //works
-		String testStr = "hello";
+		//String testStr = "hello";
+		String testStr = "hi";
 		
 		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		

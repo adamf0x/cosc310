@@ -3,4 +3,6 @@
 1 19
 .*(the)? beach.*
 1 20
+.*(rap|hip-hop|hip hop).*
+1 21
 .*
