@@ -1,4 +1,4 @@
 1 15
-.*(sure|yes|ok|why not|do it).*
+.*(sure|yes|ok|why not|do it|go ahead|don't mind|dont mind).*
 1 16
 .*

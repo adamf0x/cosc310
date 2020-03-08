@@ -18,51 +18,64 @@ import types.Node;
 
 public class ChatAI {
 	public ArrayList<StateNode> sList;
-	public Scanner scn;
 	public int curr =0;
 	public StateNode sn;
-	
+
 	public ChatAI() {
 		SParse.init();
 		sList = new ArrayList<StateNode>();
 		init();
-		
+
 	}
-	
+
 	public void init() {		
-		
+
 		try (
-			Scanner scn = new Scanner(new File("./src/statements/slist.txt"));
-		) 
+				Scanner scn = new Scanner(new File("./src/statements/slist.txt"));
+				) 
 		{
 			int count = 0;
 			String str = null;
 			while (scn.hasNextLine()) {
 				str = scn.nextLine();
 				boolean interNode = (Integer.parseInt(str.split(" ")[1])==1)?true:false;
-				sList.add(new StateNode(count++,str.split(" ")[0],interNode));
+				if(str.split(" ")[0] == "destinationreached") {
+					System.out.println("initialized end node");
+					sList.add(new StateNode(count++,str.split(" ")[0],interNode, true));
+				}
+				else {
+					sList.add(new StateNode(count++,str.split(" ")[0],interNode, false));
+				}
 			}
 		}catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		makeStatement(sList.get(0).statement.getRandomOpt());
-		
+
 	}
-	
-	
+
+
 	public StateNode getNextNode() {
 		return null;
 	}
-	
+
 	public void makeStatement(String str) {
 		TestRun.getInstance().addTextToWindow("Driver: " + str + "\n");
-		TestRun.getInstance().addTextToWindow("current link: " + curr);
 	}
-	
+
 	public void generateResponse(String inp) {	
-		if(curr == -1)return;
+		if(curr == -1) { //ISSUE: im not sure how to trigger this upon the "destinationreached" statement 
+			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n\n");
+			sList.clear();//clear the statement list of possible statements
+			curr = 0;//set the current statement to 0
+			init();//reinitialize 
+			return;//exit the generate response function
+		}
 		sn = sList.get(curr);
+		System.out.println(curr);
+		System.out.println(sn.name);
+		//if a ride is coming to a close, initialize a new ride instance 
 		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
 			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
 			UserQueue next = sn.testInpForQueues(inp, endVal);
@@ -72,19 +85,15 @@ public class ChatAI {
 				makeStatement(sList.get(curr).statement.getRandomOpt());
 				while(curr != -1 && sn.interNode) {
 					curr = sn.outgoingLinks.get(0).traverse();
-					if(curr == -1)return;
-					sn = sList.get(curr); //in this case there is only 1 link, so the next node is assumed	
-					makeStatement(sList.get(curr).statement.getRandomOpt());
+					if(curr != -1) {
+						sn = sList.get(curr); //in this case there is only 1 link, so the next node is assumed	
+						makeStatement(sList.get(curr).statement.getRandomOpt());
+					}
 				}
 			}
 			else {
 				makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
 			}
-		}
-		else if(curr == 26) {
-			System.out.println("finished with this passenger");
-			curr = 0;
-			makeStatement("Thanks again for choosing EZ cabs!");
 		}
 		/*else {
 			makeStatement(sList.get(curr).statement.getRandomOpt());
@@ -94,5 +103,5 @@ public class ChatAI {
 		return;
 		//return out;
 	}
-	
+
 }

@@ -1,6 +1,6 @@
 1 2
-.*(store|dive bar|theater|mall).*
+.*(store|dive bar|theater|mall|down town|downtown).*
 1 4
-.*(airport|bus station|harbour).*
+.*(airport|bus station|harbour|uptown|up town).*
 1 3
 .*

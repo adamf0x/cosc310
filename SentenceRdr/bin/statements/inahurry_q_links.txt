@@ -1,4 +1,4 @@
 1 6
-.*(slow|no|take your time).*
+.*(slow|no|take your time|no rush|no hurry).*
 1 7
-.*(fast|yes|asap|floor it).*
+.*(fast|yes|asap|floor it|you should hurry|i'm late| im late).*

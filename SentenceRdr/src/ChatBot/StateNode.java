@@ -13,12 +13,13 @@ public class StateNode {
 	public boolean interNode; //some nodes do not queue the user for speech, they join with other paths at the next decision node. this is true in such a case
 	public String name;
 	public Stmt statement;	
+	public boolean isLastNode = false;
 	
-	
-	public StateNode(int id, String name, boolean interNode) {
+	public StateNode(int id, String name, boolean interNode, boolean isLastNode) {
 		this.id =id;
 		this.name = name;
 		this.interNode = interNode;
+		this.isLastNode = isLastNode;
 		statement = new Stmt(name);
 		getQueues();
 	}
