@@ -66,7 +66,7 @@ public class ChatAI {
 
 	public void generateResponse(String inp) {	
 		if(curr == -1) { //ISSUE: im not sure how to trigger this upon the "destinationreached" statement 
-			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n\n");
+			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n");
 			sList.clear();//clear the statement list of possible statements
 			curr = 0;//set the current statement to 0
 			init();//reinitialize 
