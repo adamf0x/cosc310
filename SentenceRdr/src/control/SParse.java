@@ -32,7 +32,7 @@ public class SParse {
 		//String testStr = "Pay him tomorrow";
 		//String testStr = "run"; //works
 		//String testStr = "hello";
-		String testStr = "hi";
+		String testStr = "green";
 		
 		//String testStr = "Lively little John drove in a car to the park carelessly but he fell and hurt his hand";//works
 		

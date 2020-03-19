@@ -25,7 +25,7 @@ public class ChatAI {
 		SParse.init();
 		sList = new ArrayList<StateNode>();
 		init();
-
+		
 	}
 
 	public void init() {		
@@ -52,7 +52,7 @@ public class ChatAI {
 			e.printStackTrace();
 		}
 		makeStatement(sList.get(0).statement.getRandomOpt());
-
+		sn = sList.get(0);
 	}
 
 
@@ -61,7 +61,7 @@ public class ChatAI {
 	}
 
 	public void makeStatement(String str) {
-		TestRun.getInstance().addTextToWindow("Driver: " + str + "\n");
+		TestRun.addTextToWindow("Driver: " + str + "\n");
 	}
 
 	public void generateResponse(String inp) {	
@@ -79,7 +79,7 @@ public class ChatAI {
 		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
 			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
 			UserQueue next = sn.testInpForQueues(inp, endVal);
-			if(next != null) {
+			if(next != null) {				
 				curr = sn.testInpForQueues(inp, endVal).traverse();	
 				sn = sList.get(curr);
 				makeStatement(sList.get(curr).statement.getRandomOpt());
@@ -92,16 +92,29 @@ public class ChatAI {
 				}
 			}
 			else {
-				makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
+				//makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
+				//MarkII:begin Interlude Conversation. It will restart the recursive sequence and end the one that went awry.
+				
+				//eventually it should return some data which can be used to recall what was discussed if necessary. for now it will just instantiate itself.
+				//perhaps the existing interlude conversation data can be passed as an argument to the constructor to prevent repetition and to enable greater 
+				//synthesis of statements into an integrated "conversation". This would prevent high coupling (which would occur if simply reading a property for instance)
+				
+				int prev = curr;
+				sn.interConv = new InterludeConversation(inp, sn);
+				//sets the current index to whatever is indicated on the links page for the decision node in question. (its the number following 3, followed by 2 lines of text)
+				curr = sn.destinationByDefault;
+				//makeStatement(sList.get(curr).statement.getRandomOpt());
 			}
-		}
-		/*else {
-			makeStatement(sList.get(curr).statement.getRandomOpt());
-			curr = sn.outgoingLinks.get(0).traverse(); //in this case there is only 1 link, so the next node is assumed	
-		}*/
-		//makeStatement(sList.get(curr).statement.getRandomOpt());*/
-		return;
-		//return out;
+		}		
+		return;		
 	}
-
+	
+	public void handleInput(String input) {
+		//the interConv will only exist until it concludes, at which point control is returned to the normal flow.
+		if(this.sn.interConv != null) {
+			sn.interConv.interpretStatement(input);
+			sn.interConv.nextMove(input);
+		}
+		else generateResponse(input);
+	}
 }

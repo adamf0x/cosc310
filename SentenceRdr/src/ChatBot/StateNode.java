@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import control.TestRun;
 import types.Node;
 
 public class StateNode {
@@ -14,6 +15,9 @@ public class StateNode {
 	public String name;
 	public Stmt statement;	
 	public boolean isLastNode = false;
+	public String nlpOpeningStmt, nlpClosingStmt;
+	public int destinationByDefault;
+	public InterludeConversation interConv;
 	
 	public StateNode(int id, String name, boolean interNode, boolean isLastNode) {
 		this.id =id;
@@ -55,6 +59,11 @@ public class StateNode {
 				else if(temp == 1) {
 					outgoingLinks.add(new UserQueue(ep,id,temp2,null));
 				}
+				else if(temp == 3) {//this stores the data needed to begin the NLP interlude conversation for this node
+					this.destinationByDefault = ep;
+					this.nlpOpeningStmt = temp2;
+					this.nlpClosingStmt = scn.nextLine();
+				}
 				else {
 					outgoingLinks.add(new UserQueue(ep,id,null,null));
 				}
@@ -74,6 +83,13 @@ public class StateNode {
 			}
 		}
 		return null;
+	}
+	
+	public void movingOn() {
+		this.interConv = null;
+		ChatAI AI = TestRun.getAI();
+		//after concluding the interlude conversation, a question must be posed to restart the dialogue.
+		AI.makeStatement(AI.sList.get(AI.curr).statement.getRandomOpt());
 	}
 	
 	

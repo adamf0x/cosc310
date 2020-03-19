@@ -1,7 +1,7 @@
 package control;
 
 import ChatBot.ChatAI;
-
+import ChatBot.InterludeConversation;
 import types.*;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -32,6 +32,7 @@ public class TestRun extends Application {
 	static TextField input = new TextField();
 	static TextArea output = new TextArea();
 	static int count = 0;
+	public static ChatAI AI;
 
 	public void start(Stage theStage){
 		//set constraints on JavaFX components and create the scene
@@ -53,7 +54,9 @@ public class TestRun extends Application {
 		theStage.setTitle("chatbot");
 		theStage.setScene(new Scene(window));
 		theStage.show();
-		ChatAI AI = new ChatAI();
+		initializeSNLP();
+		AI = new ChatAI();
+		
 		
 		
 		//handle click of the submit button
@@ -62,7 +65,7 @@ public class TestRun extends Application {
 		public void handle(MouseEvent arg0) {
 				output.appendText("You : " + input.getText() + "\n\n");
 				System.out.println(input.getText());
-				AI.generateResponse(input.getText());
+				AI.handleInput(input.getText());
 				input.clear();
 				count++;
 			}
@@ -71,7 +74,7 @@ public class TestRun extends Application {
 		input.setOnKeyPressed(e -> {
 		    if (e.getCode() == KeyCode.ENTER) {
 		    	output.appendText("You : " + input.getText() + "\n\n");
-				AI.generateResponse(input.getText());
+				AI.handleInput(input.getText());
 				input.clear();
 				count++;
 		    }
@@ -81,16 +84,19 @@ public class TestRun extends Application {
 		}*/
 	}
 	
-	public static TestRun getInstance() {
-		if(singleton==null)singleton = new TestRun();
-		return singleton;
+	public static ChatAI getAI() {
+		return AI;
 	}
 	
-	public void addTextToWindow(String text) {
-		this.output.appendText(text);
+	public static void initializeSNLP() {
+		InterludeConversation.init();
 	}
 	
-	public String clearText() {
+	public static void addTextToWindow(String text) {
+		output.appendText(text);
+	}
+	
+	public static String clearText() {
 		String rVal = output.getText();
 		output.clear();
 		return rVal;

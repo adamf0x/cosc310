@@ -1,6 +1,9 @@
 1 9
-.*(cold|wet|terrible|bad|horrid|horrible|brutal|nope|no).*
+.*(cold|wet).*
 1 10
-.*(storm|wind|terrible|bad|horrid|horrible|brutal|nope|no).*
+.*(freezing|storm|wind|terrible|bad|horrid|horrible|brutal|nope|no).*
 1 13
-.*(not (so)? bad|could be worse|nice|.).*
+.*(not( so | )bad|could be worse|nice|.).*
+3 14
+Feel free to converse on any topic.
+I just ask about the weather because I don't know what else to talk about.

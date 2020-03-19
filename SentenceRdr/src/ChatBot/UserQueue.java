@@ -49,19 +49,20 @@ public class UserQueue {
 			Person testPerson = null;
 			Voice testVoice = null;
 			int mode, person, voice;
+			matches = false;
 			//change it so tht instead of returning the modality, etc it just mutates the sentence, so that the function can execute for compound sentences recursively
 			if((testMode = Modality.getModality((Sentence)endVal)) != null) {
 				mode = Modality.getModality(eV).id;//System.out.println("\n\nmodality : " + testMode.toString());
-				if(!auxContains(0,mode)) matches = false;
+				if(auxContains(0,mode)) matches = true;
 			}
 			
 			if((testPerson = Modality.getPerson((Sentence)endVal)) != null) {
 				person = Modality.getPerson(eV).id;//System.out.println("\n\nperson : " + testPerson.toString());
-				if(!auxContains(1,person)) matches = false;
+				if(auxContains(1,person)) matches = true;
 			}
 			if((testVoice = Modality.getVoice((Sentence)endVal)) != null) {
 				voice = Modality.getVoice(eV).id;//System.out.println("\n\nvoice : " + testVoice.toString());
-				if(!auxContains(2,voice)) matches = false;
+				if(auxContains(2,voice)) matches = true;
 			}
 		}
 		else {			//match with pStr (a regex)
@@ -79,7 +80,7 @@ public class UserQueue {
 	}
 	
 	public boolean auxContains(int inner, int val) { //should be called conditionSatisfied()
-		if(!asrtOpts(inner)) return true; //true because if it doesnt exist as a condition then it doesnt render the response false for not exsting
+		if(!asrtOpts(inner)) return false; 
 		for(int i : auxOpts[inner])
 			if(val == i)return true;
 		return false;

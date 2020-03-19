@@ -1,4 +1,7 @@
 1 6
 .*(slow|no|take your time|no rush|no hurry).*
 1 7
-.*(fast|yes|asap|floor it|you should hurry|i'm late| im late).*
+.*(fast|yes|asap|floor it|(you should )?hurry|i'm late| im late).*
+3 8
+No plans for the evening then?
+I rarely go out myself. Socializing tends to be part of this job.

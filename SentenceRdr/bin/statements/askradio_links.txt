@@ -1,4 +1,7 @@
 1 15
 .*(sure|yes|ok|why not|do it|go ahead|don't mind|dont mind).*
 1 16
-.*
+.*(no|never|anything but that).*
+3 21
+I prefer deep cuts myself. Do you listen to music much?
+They say its a universal language.
