@@ -73,8 +73,6 @@ public class ChatAI {
 			return;//exit the generate response function
 		}
 		sn = sList.get(curr);
-		System.out.println(curr);
-		System.out.println(sn.name);
 		//if a ride is coming to a close, initialize a new ride instance 
 		if(!sn.interNode) {	//if the user is queued to make a decision (thus determining the link chosen)
 			Node endVal = SParse.getPhraseTreeFromString(inp, 0, false);
