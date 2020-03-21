@@ -62,6 +62,7 @@ public class ChatAI {
 
 	public void makeStatement(String str) {
 		TestRun.addTextToWindow("Driver: " + str + "\n");
+		TestRun.aiOutput.add(str );
 	}
 
 	public void generateResponse(String inp) {	

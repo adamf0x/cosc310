@@ -3,6 +3,8 @@ package control;
 import ChatBot.ChatAI;
 import ChatBot.InterludeConversation;
 import types.*;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -33,20 +35,25 @@ public class TestRun extends Application {
 	static TextArea output = new TextArea();
 	static int count = 0;
 	public static ChatAI AI;
-
+	public static ArrayList<String> userInput = new ArrayList<>();
+	public static ArrayList<String> aiOutput = new ArrayList<>();
 	public void start(Stage theStage){
 		//set constraints on JavaFX components and create the scene
 		output.setEditable(false);
 		Button submit = new Button("Submit");
-		submit.setMinWidth(100);
+		Button undo = new Button("Undo");
+		submit.setMinWidth(60);
 		submit.setMinHeight(50);
+		undo.setMinHeight(50);
+		undo.setMinWidth(60);
 		input.setMinHeight(50);
-		input.setMinWidth(925);
+		input.setMinWidth(900);
 		output.setMinHeight(550);
 		output.setMinWidth(1025);
 		output.setLayoutX(0);
 		inputArea.getChildren().add(input);
 		inputArea.getChildren().add(submit);
+		inputArea.getChildren().add(undo);
 		inputArea.setLayoutY(550);
 		outputArea.getChildren().add(output);
 		window.getChildren().add(inputArea);
@@ -56,51 +63,69 @@ public class TestRun extends Application {
 		theStage.show();
 		initializeSNLP();
 		AI = new ChatAI();
-		
-		
-		
+
+
+
 		//handle click of the submit button
 		submit.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-		public void handle(MouseEvent arg0) {
-				output.appendText("You : " + input.getText() + "\n\n");
+			public void handle(MouseEvent arg0) {
+				output.appendText("You: " + input.getText() + "\n\n");
 				System.out.println(input.getText());
 				AI.handleInput(input.getText());
+				userInput.add(input.getText());
 				input.clear();
 				count++;
+				System.out.println(userInput.get(userInput.size()-1));
+				System.out.println(aiOutput.get(aiOutput.size()-1));
 			}
 		});
 		//handle user using enter key to enter text
 		input.setOnKeyPressed(e -> {
-		    if (e.getCode() == KeyCode.ENTER) {
-		    	output.appendText("You : " + input.getText() + "\n\n");
+			if (e.getCode() == KeyCode.ENTER) {
+				output.appendText("You: " + input.getText() + "\n\n");
 				AI.handleInput(input.getText());
+				userInput.add(input.getText());
 				input.clear();
 				count++;
-		    }
+				System.out.println(userInput.get(userInput.size()-1));
+				System.out.println(aiOutput.get(aiOutput.size()-1));
+			}
 		});
 		/*if(AI.sn != null && AI.sn.interNode) {
 			output.appendText(AI.generateResponse(""));
 		}*/
+		undo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(userInput.size() > 0 && aiOutput.size() > 0) {
+					output.setText(output.getText().replace("You: " + userInput.get(userInput.size()-1),""));
+					userInput.remove(userInput.size()-1);
+					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1),""));
+					aiOutput.remove(aiOutput.size()-1);
+				}
+			}
+		});
 	}
-	
+
+
 	public static ChatAI getAI() {
 		return AI;
 	}
-	
+
 	public static void initializeSNLP() {
 		InterludeConversation.init();
 	}
-	
+
 	public static void addTextToWindow(String text) {
 		output.appendText(text);
 	}
-	
+
 	public static String clearText() {
 		String rVal = output.getText();
 		output.clear();
 		return rVal;
 	}
-	
+
 
 }
