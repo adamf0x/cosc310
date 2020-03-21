@@ -76,8 +76,6 @@ public class TestRun extends Application {
 				userInput.add(input.getText());
 				input.clear();
 				count++;
-				System.out.println(userInput.get(userInput.size()-1));
-				System.out.println(aiOutput.get(aiOutput.size()-1));
 			}
 		});
 		//handle user using enter key to enter text
@@ -88,8 +86,6 @@ public class TestRun extends Application {
 				userInput.add(input.getText());
 				input.clear();
 				count++;
-				System.out.println(userInput.get(userInput.size()-1));
-				System.out.println(aiOutput.get(aiOutput.size()-1));
 			}
 		});
 		/*if(AI.sn != null && AI.sn.interNode) {
@@ -98,11 +94,12 @@ public class TestRun extends Application {
 		undo.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
-				if(userInput.size() > 0 && aiOutput.size() > 0) {
+				if(userInput.size() > 0 && aiOutput.size() > 0 && AI.curr > 0) {
 					output.setText(output.getText().replace("You: " + userInput.get(userInput.size()-1) + "\n\n",""));
 					userInput.remove(userInput.size()-1);
 					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1) + "\n",""));
 					aiOutput.remove(aiOutput.size()-1);
+					System.out.println(AI.curr);
 					AI.curr -= 1;
 				}
 			}

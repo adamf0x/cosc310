@@ -61,12 +61,12 @@ public class ChatAI {
 	}
 
 	public void makeStatement(String str) {
-		System.out.println("making string");
 		TestRun.addTextToWindow("Driver: " + str + "\n");
 		TestRun.aiOutput.add(str );
 	}
 
 	public void generateResponse(String inp) {	
+		System.out.println("gen response at: " + curr);
 		if(curr == -1) { //ISSUE: im not sure how to trigger this upon the "destinationreached" statement 
 			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n");
 			sList.clear();//clear the statement list of possible statements
@@ -81,6 +81,7 @@ public class ChatAI {
 			UserQueue next = sn.testInpForQueues(inp, endVal);
 			if(next != null) {				
 				curr = sn.testInpForQueues(inp, endVal).traverse();	
+				System.out.println("gen response at: " + curr);
 				sn = sList.get(curr);
 				makeStatement(sList.get(curr).statement.getRandomOpt());
 				while(curr != -1 && sn.interNode) {
