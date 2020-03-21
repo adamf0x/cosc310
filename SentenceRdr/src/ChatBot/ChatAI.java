@@ -61,6 +61,7 @@ public class ChatAI {
 	}
 
 	public void makeStatement(String str) {
+		System.out.println("making string");
 		TestRun.addTextToWindow("Driver: " + str + "\n");
 		TestRun.aiOutput.add(str );
 	}

@@ -99,10 +99,11 @@ public class TestRun extends Application {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if(userInput.size() > 0 && aiOutput.size() > 0) {
-					output.setText(output.getText().replace("You: " + userInput.get(userInput.size()-1),""));
+					output.setText(output.getText().replace("You: " + userInput.get(userInput.size()-1) + "\n\n",""));
 					userInput.remove(userInput.size()-1);
-					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1),""));
+					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1) + "\n",""));
 					aiOutput.remove(aiOutput.size()-1);
+					AI.curr -= 1;
 				}
 			}
 		});

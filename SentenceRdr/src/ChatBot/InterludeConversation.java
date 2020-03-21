@@ -53,6 +53,7 @@ public class InterludeConversation {
 	//same as in the chatAI class
 	public void makeStatement(String str) {
 		TestRun.addTextToWindow("Driver: " + str + "\n");
+		TestRun.aiOutput.add(str);
 	}
 	
 	public static void init() {
