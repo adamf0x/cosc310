@@ -1,10 +1,13 @@
 package ChatBot;
 
+import java.util.ArrayList;
 import java.util.Properties;
+
 
 import control.TestRun;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
+import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 //if the original chatbot doesnt know how to handle a reply, the stanfordAPI is employed to further analyze the user's input, creating a conversation within the conversation that will
@@ -12,6 +15,10 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 public class InterludeConversation {
 	private StateNode sn;
 	static StanfordCoreNLP pipeline;
+	static String[] lr = {"oh yeah ive been there before its beautiful!", "yeah im familiar with that area ill take you right there", "oh, ive never been to that area but let me know exactly where to turn", "oh, I've never been"};
+	static String[] negsentresp = {"im sorry to hear that", "well theres no need to be negative about things"};
+	static String[] possentresp = {"yeah I also enjoy it", "I agree, it's great"};
+	static String[] neutsentresp = {"well im sure youll grow to enjoy it", "never been much of a fan myself"};
 	public InterludeConversation(String argS, StateNode sn) {
 		this.sn = sn;
 		if(pipeline == null) {
@@ -37,10 +44,28 @@ public class InterludeConversation {
 	    CoreDocument doc = new CoreDocument(argS);
 	    // annotate the document
 	    pipeline.annotate(doc);
+	    ArrayList<CoreSentence> sentences = (ArrayList<CoreSentence>) doc.sentences(); 
+	    System.out.println(argS);
 	    //debug code
-		if(doc != null && doc.entityMentions() != null) 
+	    for(CoreSentence sentence:sentences) {
+			String sentiment = sentence.sentiment();
+			if(sentiment.equals("Positive")) {
+				this.makeStatement(possentresp[((int)Math.random())*possentresp.length]);
+			}
+			if(sentiment.equals("Neutral")) {
+				this.makeStatement(neutsentresp[((int)Math.random())*neutsentresp.length]);
+			}
+			if(sentiment.equals("Negative")) {
+				this.makeStatement(negsentresp[((int)Math.random())*negsentresp.length]);
+			}
+			System.out.println(sentence + "\t" + sentiment);
+		}
+		if(doc != null && doc.entityMentions() != null) {
+			this.makeStatement(lr[((int)Math.random())*lr.length]);
 		    for (CoreEntityMention em : doc.entityMentions())
 		    	System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());
+		    
+		}
 		
 		
 	}
@@ -58,7 +83,7 @@ public class InterludeConversation {
 	
 	public static void init() {
 		Properties props = new Properties();
-	    props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+	    props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, entitymentions, parse, dcoref, sentiment");
 	    // set up pipeline
 	    pipeline = new StanfordCoreNLP(props);
 	}
