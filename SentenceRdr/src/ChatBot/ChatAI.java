@@ -113,8 +113,10 @@ public class ChatAI {
 	public void handleInput(String input) {
 		//the interConv will only exist until it concludes, at which point control is returned to the normal flow.
 		if(this.sn.interConv != null) {
-			sn.interConv.interpretStatement(input);
-			sn.interConv.nextMove(input);
+			//sn.interConv.interpretStatement(input);
+			sn.interConv.iterationsToDefault--; //when this gets to 0, the conversation will conclude.
+			sn.interConv.nextMove(input, sn.interConv.matchedQueue);
+			
 		}
 		else generateResponse(input);
 	}

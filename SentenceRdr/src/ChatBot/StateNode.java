@@ -16,7 +16,7 @@ public class StateNode {
 	public Stmt statement;	
 	public boolean isLastNode = false;
 	public String nlpOpeningStmt, nlpClosingStmt;
-	public int destinationByDefault;
+	public int destinationByDefault, priorityOfResponses;
 	public InterludeConversation interConv;
 	
 	public StateNode(int id, String name, boolean interNode, boolean isLastNode) {
@@ -61,6 +61,8 @@ public class StateNode {
 				}
 				else if(temp == 3) {//this stores the data needed to begin the NLP interlude conversation for this node
 					this.destinationByDefault = ep;
+					if(temp11.length > 2)this.priorityOfResponses = Integer.parseInt(temp11[2]);
+					else this.priorityOfResponses = 0;
 					this.nlpOpeningStmt = temp2;
 					this.nlpClosingStmt = scn.nextLine();
 				}
