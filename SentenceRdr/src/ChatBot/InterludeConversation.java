@@ -1,22 +1,33 @@
 package ChatBot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 
 import control.TestRun;
+import edu.stanford.nlp.coref.CorefCoreAnnotations.CorefChainAnnotation;
+import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
+import edu.stanford.nlp.ling.Label;
+import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.util.CoreMap;
 
 //if the original chatbot doesnt know how to handle a reply, the stanfordAPI is employed to further analyze the user's input, creating a conversation within the conversation that will
 //return the point at which it began in the original graph traversal, repeating the question (using the other form, or another if there are more than 2) that raised the exception.
 public class InterludeConversation {
 	private StateNode sn;
 	static StanfordCoreNLP pipeline;
-	static String[] lr = {"oh yeah ive been there before its beautiful!", "yeah im familiar with that area ill take you right there", "oh, ive never been to that area but let me know exactly where to turn", "oh, I've never been"};
-	static String[] tr = {"That must be interesting", "I always found that difficult", "I'll stick to the transportation industry, but good for you!"};
+	static String[] lr = {"%0, ive been there before its beautiful!", "yeah im familiar with %0 ill take you right there", "oh, ive never been to %0 but let me know exactly where to turn", "oh, I've never been"};
+	static String[] tr = {"%0, that must be interesting", "I always found the idea of being a %0 daunting", "You're a %0, good for you!"};
+	
 	static String[] negsentresp = {"im sorry to hear that", "well theres no need to be negative about things"};
 	static String[] possentresp = {"yeah I also enjoy it", "I agree, it's great"};
 	static String[] neutsentresp = {"well im sure youll grow to enjoy it", "never been much of a fan myself"};
@@ -55,6 +66,8 @@ public class InterludeConversation {
 	    // annotate the document
 	    pipeline.annotate(doc);
 	    ArrayList<CoreSentence> sentences = (ArrayList<CoreSentence>) doc.sentences(); 
+	    Map<Integer, CorefChain> graph = doc.annotation().get(CorefChainAnnotation.class);
+	    List <CoreMap> sentCore = doc.annotation().get(SentencesAnnotation.class);
 	    System.out.println(argS);
 	    boolean matchedSomething = false;
 	    //run through the array of priorities, matching each in turn if necessary.
@@ -83,7 +96,7 @@ public class InterludeConversation {
 							
 						    for (CoreEntityMention em : doc.entityMentions())
 						    	if(em.entityType().equals("LOCATION")) {
-						    		this.makeStatement(lr[((int)Math.random())*lr.length]);
+						    		this.makeStatement(lr[((int)Math.random())*lr.length],em,sentCore);
 						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
 						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true;//the interlude conversation ends if this is set to true
 						    		matchedSomething = true; //the function exits if this is set to true;
@@ -95,7 +108,7 @@ public class InterludeConversation {
 							
 						    for (CoreEntityMention em : doc.entityMentions())
 						    	if(em.entityType().equals("TITLE")) {
-						    		this.makeStatement(tr[((int)Math.random())*tr.length]);
+						    		this.makeStatement(tr[((int)Math.random())*tr.length],em,sentCore);
 						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
 						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true; //the interlude conversation ends if this is set to true
 						    		matchedSomething = true; //the function exits if this is set to true;
@@ -120,6 +133,38 @@ public class InterludeConversation {
 	public void makeStatement(String str) {
 		TestRun.addTextToWindow("Driver: " + str + "\n");
 		TestRun.aiOutput.add(str);
+	}
+	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
+		String[] splitStr = str.split("%0");
+		String pString = splitStr[0];
+		String iStr = "";
+		ArrayList<Label> lbls = null;
+		//the NP doesnt apply to any individual element of the tree, it is another layer over top.
+		 for (CoreMap sentence : sentences) {			 
+			Tree tree = sentence.get(TreeAnnotation.class);		
+			tree.constituents().toString();
+			System.out.println("(tree) Looking for noun phrase: " + tree.toString());
+			
+			
+			if(tree.value().equals("NP")) {
+				System.out.println("Looking for noun phrase: " + tree.value());
+				break;
+			}
+			for(Tree subtree : tree) {				
+				if(subtree.value().equals("NP") && subtree.toString().contains(em.text())) {
+					for(Word wrd: subtree.yieldWords()) {
+						iStr += wrd.toString() + " ";
+					}		
+					break;
+				}
+			}
+			iStr = iStr.trim();
+		}
+		for(int i = 1; i < splitStr.length;i++) {//just in case multiple mentions are added later
+			pString += iStr + splitStr[i];
+		}
+		TestRun.addTextToWindow("Driver: " + pString + "\n");
+		TestRun.aiOutput.add(pString);
 	}
 	
 	public static void init() {

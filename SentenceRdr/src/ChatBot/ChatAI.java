@@ -67,7 +67,7 @@ public class ChatAI {
 
 	public void generateResponse(String inp) {	
 		System.out.println("gen response at: " + curr);
-		if(curr == -1) { //ISSUE: im not sure how to trigger this upon the "destinationreached" statement 
+		if(curr == -1) { 
 			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n");
 			sList.clear();//clear the statement list of possible statements
 			curr = 0;//set the current statement to 0
@@ -92,14 +92,7 @@ public class ChatAI {
 					}
 				}
 			}
-			else {
-				//makeStatement(sList.get(curr).statement.getRandomOpt()); //repeat the question if a response is not entered
-				//MarkII:begin Interlude Conversation. It will restart the recursive sequence and end the one that went awry.
-				
-				//eventually it should return some data which can be used to recall what was discussed if necessary. for now it will just instantiate itself.
-				//perhaps the existing interlude conversation data can be passed as an argument to the constructor to prevent repetition and to enable greater 
-				//synthesis of statements into an integrated "conversation". This would prevent high coupling (which would occur if simply reading a property for instance)
-				
+			else {		
 				int prev = curr;
 				sn.interConv = new InterludeConversation(inp, sn);
 				//sets the current index to whatever is indicated on the links page for the decision node in question. (its the number following 3, followed by 2 lines of text)
