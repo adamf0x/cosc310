@@ -25,12 +25,13 @@ import edu.stanford.nlp.util.CoreMap;
 public class InterludeConversation {
 	private StateNode sn;
 	static StanfordCoreNLP pipeline;
-	static String[] lr = {"%0, ive been there before its beautiful!", "yeah im familiar with %0 ill take you right there", "oh, ive never been to %0 but let me know exactly where to turn", "oh, I've never been"};
-	static String[] tr = {"%0, that must be interesting", "I always found the idea of being a %0 daunting", "You're a %0, good for you!"};
-	
-	static String[] negsentresp = {"im sorry to hear that", "well theres no need to be negative about things"};
-	static String[] possentresp = {"yeah I also enjoy it", "I agree, it's great"};
-	static String[] neutsentresp = {"well im sure youll grow to enjoy it", "never been much of a fan myself"};
+	static String[] lr = {"%0, ive been there before its beautiful!", "Yeah im familiar with %0 ill take you right there", "Oh, ive never been to %0 but let me know exactly where to turn", "Oh, I've never been to %0"};
+	static String[] tr = {"%0, that must be interesting", "I always found the idea of being a %0 daunting", "You're a %0? Good for you."};
+	static String[] pr = {"%0, that sounds familiar...\nWhere did I hear that name?","%0, is that a friend of yours?", "%0, now there's a fancy name"};
+	static String[] or = {"I've heard good things about %0, what do they do again?","%0, I had a friend who did some work for them", "Seems you can't go a day without reading about %0 online..."};
+	static String[] negsentresp = {"Im sorry to hear that", "Well, theres no need to be negative about things", "You'll get over it"};
+	static String[] possentresp = {"Yeah I also enjoy it", "I agree, it's great!", "Glad to hear it!", "Well there ya go!"};
+	static String[] neutsentresp = {"Well im sure youll grow to enjoy it", "Never been much of a fan myself", "What can ya do?"};
 	public int[] sequenceOfResponses;
 	public boolean matchedQueue = false;
 	public int iterationsToDefault = 3;
@@ -39,7 +40,7 @@ public class InterludeConversation {
 		if(pipeline == null) {
 			init();
 		}
-		sequenceOfResponses = new int[3];
+		sequenceOfResponses = new int[5];
 		sequenceOfResponses[0] = sn.priorityOfResponses;
 		int opt = 0;
 		for(int i = 1; i < sequenceOfResponses.length;i++)
@@ -74,11 +75,12 @@ public class InterludeConversation {
 	    for(int i = 0; i < this.sequenceOfResponses.length; i++) {
 	    	if(matchedSomething)break;
 	    	switch(this.sequenceOfResponses[i]) {
-		    	case 0:for(CoreSentence sentence:sentences) { //might have to find some way to aggregate the sentences (if there is more than 1) before responding, just to keep the back and forth pattern intact
+		    	case 4:for(CoreSentence sentence:sentences) { //might have to find some way to aggregate the sentences (if there is more than 1) before responding, just to keep the back and forth pattern intact
 							String sentiment = sentence.sentiment();
 							if(sentiment.equals("Positive")) {
 								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)]);
 								matchedSomething = true; //the function exits if this is set to true;
+								System.out.println("Sentiment Detection: i = " + i);
 							}
 							if(sentiment.equals("Neutral")) {
 								this.makeStatement(neutsentresp[(int)(Math.random()*neutsentresp.length)]);
@@ -91,7 +93,7 @@ public class InterludeConversation {
 							System.out.println(sentence + "\t" + sentiment);
 						}
 		    			break;
-		    	case 1:if(doc != null && doc.entityMentions() != null) {
+		    	case 1:/*if(doc != null && doc.entityMentions() != null) {
 		    			
 							
 						    for (CoreEntityMention em : doc.entityMentions())
@@ -102,9 +104,11 @@ public class InterludeConversation {
 						    		matchedSomething = true; //the function exits if this is set to true;
 						    		break;
 						    	}
-						}
+						}*/
+		    			System.out.println("Location Detection: i = " + i);
+		    			matchedSomething = chooseResponse("LOCATION",i,doc,sentCore, lr);
 						break;
-		    	case 2:if(doc != null && doc.entityMentions() != null) {
+		    	case 2:/*if(doc != null && doc.entityMentions() != null) {
 							
 						    for (CoreEntityMention em : doc.entityMentions())
 						    	if(em.entityType().equals("TITLE")) {
@@ -114,9 +118,29 @@ public class InterludeConversation {
 						    		matchedSomething = true; //the function exits if this is set to true;
 						    		break;
 						    	}
-						}
-						break;
-				
+						}*/
+		    			System.out.println("Title Detection: i = " + i);
+		    			matchedSomething = chooseResponse("TITLE",i,doc,sentCore, tr);
+						break;	
+		    	case 3:/*if(doc != null && doc.entityMentions() != null) {
+					
+					    	for (CoreEntityMention em : doc.entityMentions())
+						    	if(em.entityType().equals("PERSON")) {
+						    		this.makeStatement(tr[((int)Math.random())*tr.length],em,sentCore);
+						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
+						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true; //the interlude conversation ends if this is set to true
+						    		matchedSomething = true; //the function exits if this is set to true;
+						    		break;
+					    	}
+						}*/
+		    			System.out.println("Person Detection: i = " + i);
+		    			matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
+		    			break;	
+		    	case 0:
+		    			System.out.println("Organization Detection: i = " + i);
+		    			matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
+		    			break;
+				//there is no default case, the loop continues to search in the particular order of priority predetermined for each node (default is sentiment first)
 	    	}
 	    }
 		return matchedSomething; //this currently doesnt signal anything but might be useful information to pass on
@@ -130,32 +154,37 @@ public class InterludeConversation {
 	}
 	
 	//same as in the chatAI class
-	public void makeStatement(String str) {
+	//simpler version used by sentiment analysis to output text.
+	public void makeStatement(String str) {  
 		TestRun.addTextToWindow("Driver: " + str + "\n");
 		TestRun.aiOutput.add(str);
 	}
+	
+	//this version is used with NER and includes functionality to insert the object of the statement into the response
 	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
 		String[] splitStr = str.split("%0");
 		String pString = splitStr[0];
-		String iStr = "";
-		ArrayList<Label> lbls = null;
+		String iStr = "";		
 		//the NP doesnt apply to any individual element of the tree, it is another layer over top.
 		 for (CoreMap sentence : sentences) {			 
 			Tree tree = sentence.get(TreeAnnotation.class);		
-			tree.constituents().toString();
-			System.out.println("(tree) Looking for noun phrase: " + tree.toString());
-			
-			
+			tree.constituents().toString();	
+			System.out.println("(tree.value) : " + tree.value());
 			if(tree.value().equals("NP")) {
-				System.out.println("Looking for noun phrase: " + tree.value());
-				break;
+				for(Word wrd: tree.yieldWords()) {
+					iStr += wrd.toString() + " ";
+				}
+				if(iStr.contains(em.text()))									
+					break;
 			}
 			for(Tree subtree : tree) {				
-				if(subtree.value().equals("NP") && subtree.toString().contains(em.text())) {
-					for(Word wrd: subtree.yieldWords()) {
+				System.out.println("(subtree.value) : " + subtree.value());
+				if(subtree.value().equals("NP")) {
+					for(Word wrd: tree.yieldWords()) {
 						iStr += wrd.toString() + " ";
-					}		
-					break;
+					}
+					if(iStr.contains(em.text()))									
+						break;
 				}
 			}
 			iStr = iStr.trim();
@@ -165,6 +194,24 @@ public class InterludeConversation {
 		}
 		TestRun.addTextToWindow("Driver: " + pString + "\n");
 		TestRun.aiOutput.add(pString);
+	}
+	
+	//this is a refactoring of the function calls found in the switch statement in interpretStatement() leading to NER related responses
+	public boolean chooseResponse(String entType, int index, CoreDocument cDoc, List <CoreMap> sCore, String[] stmt) {
+		if(cDoc != null && cDoc.entityMentions() != null) {
+			boolean matchedSomething = false;
+			
+		    for (CoreEntityMention em : cDoc.entityMentions())
+		    	if(em.entityType().equals(entType)) {
+		    		this.makeStatement(stmt[((int)Math.random())*stmt.length],em,sCore);
+		    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
+		    		if(this.sequenceOfResponses[index] == sn.priorityOfResponses)matchedQueue = true;//the interlude conversation ends if this is set to true
+		    		matchedSomething = true; //the function exits if this is set to true;
+		    		break;
+		    	}
+		    return matchedSomething;
+		}
+		return false;
 	}
 	
 	public static void init() {
