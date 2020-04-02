@@ -148,6 +148,7 @@ public class InterludeConversation {
 	
 	public void nextMove(String argS, boolean mQ) {
 		if(matchedQueue || this.iterationsToDefault == 0) {
+			System.out.println("exiting interlude conversation");
 			concludeConversation();		
 		}
 		else interpretStatement(argS);

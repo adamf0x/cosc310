@@ -20,7 +20,7 @@ public class ChatAI {
 	public ArrayList<StateNode> sList;
 	public int curr =0;
 	public StateNode sn;
-
+	public String currInternodeText;
 	public ChatAI() {
 		SParse.init();
 		sList = new ArrayList<StateNode>();
@@ -62,7 +62,7 @@ public class ChatAI {
 
 	public void makeStatement(String str) {
 		TestRun.addTextToWindow("Driver: " + str + "\n");
-		TestRun.aiOutput.add(str );
+		TestRun.aiOutput.add(str);
 	}
 
 	public void generateResponse(String inp) {	
@@ -92,6 +92,9 @@ public class ChatAI {
 					}
 				}
 			}
+			else if(sn.interNode) {
+				currInternodeText = sList.get(curr).statement.getRandomOpt();
+			}
 			else {		
 				int prev = curr;
 				sn.interConv = new InterludeConversation(inp, sn);
@@ -104,6 +107,7 @@ public class ChatAI {
 	}
 	
 	public void handleInput(String input) {
+		System.out.println("handling input");
 		//the interConv will only exist until it concludes, at which point control is returned to the normal flow.
 		if(this.sn.interConv != null) {
 			//sn.interConv.interpretStatement(input);
@@ -111,6 +115,10 @@ public class ChatAI {
 			sn.interConv.nextMove(input, sn.interConv.matchedQueue);
 			
 		}
-		else generateResponse(input);
+		else {
+			System.out.println("generating response");
+			generateResponse(input);
+		}
+		
 	}
 }

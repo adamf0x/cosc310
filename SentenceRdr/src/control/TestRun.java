@@ -100,17 +100,20 @@ public class TestRun extends Application {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if(userInput.size() > 0 && aiOutput.size() > 0 && AI.curr > 0) {
+					if(AI.sList.get(AI.curr).interNode == true) {
+						output.setText(output.getText().replace("Driver: " + AI.currInternodeText + "\n",""));
+					}
+					int prevNodeNum = AI.curr;
+					while(AI.curr == prevNodeNum && nodeNums.size() != 0) {
+						AI.curr = nodeNums.pop();
+					}
+					if(AI.curr == prevNodeNum) {
+						AI.curr = 0;
+					}
 					output.setText(output.getText().replace("You: " + userInput.get(userInput.size()-1) + "\n\n",""));
 					userInput.remove(userInput.size()-1);
 					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1) + "\n",""));
 					aiOutput.remove(aiOutput.size()-1);
-					System.out.println("old " + AI.curr);
-					int prevNodeNum = AI.curr;
-					
-					while(AI.curr == prevNodeNum && nodeNums.size() != 0) {
-						AI.curr = nodeNums.pop();
-						System.out.println("new " + AI.curr);
-					}
 				}
 			}
 		});
