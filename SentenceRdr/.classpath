@@ -11,11 +11,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX 11"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Stanford NLP"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX"/>
 	<classpathentry kind="lib" path="C:/Users/Adam/Downloads/stanford-corenlp-full-2018-10-05/stanford-corenlp-full-2018-10-05/stanford-corenlp-3.9.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Adam/Downloads/stanford-corenlp-full-2018-10-05/stanford-corenlp-full-2018-10-05/stanford-corenlp-3.9.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Adam/Downloads/stanford-corenlp-full-2018-10-05/stanford-corenlp-full-2018-10-05/stanford-corenlp-3.9.2-models.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Adam/Downloads/stanford-corenlp-full-2018-10-05/stanford-corenlp-full-2018-10-05/stanford-corenlp-3.9.2-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Adam/Downloads/stanford-corenlp-full-2018-10-05/stanford-corenlp-full-2018-10-05/ejml-0.23.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

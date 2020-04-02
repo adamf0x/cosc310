@@ -7,6 +7,7 @@ import types.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Stack;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -37,8 +38,10 @@ public class TestRun extends Application {
 	public static ChatAI AI;
 	public static ArrayList<String> userInput = new ArrayList<>();
 	public static ArrayList<String> aiOutput = new ArrayList<>();
+	public static Stack<Integer> nodeNums = new Stack<Integer>();
 	public void start(Stage theStage){
 		//set constraints on JavaFX components and create the scene
+		nodeNums.push(0);
 		output.setEditable(false);
 		Button submit = new Button("Submit");
 		Button undo = new Button("Undo");
@@ -74,6 +77,7 @@ public class TestRun extends Application {
 				System.out.println(input.getText());
 				AI.handleInput(input.getText());
 				userInput.add(input.getText());
+				nodeNums.push(AI.curr);
 				input.clear();
 				count++;
 			}
@@ -84,6 +88,7 @@ public class TestRun extends Application {
 				output.appendText("You: " + input.getText() + "\n\n");
 				AI.handleInput(input.getText());
 				userInput.add(input.getText());
+				nodeNums.push(AI.curr);
 				input.clear();
 				count++;
 			}
@@ -99,8 +104,13 @@ public class TestRun extends Application {
 					userInput.remove(userInput.size()-1);
 					output.setText(output.getText().replace("Driver: " + aiOutput.get(aiOutput.size()-1) + "\n",""));
 					aiOutput.remove(aiOutput.size()-1);
-					System.out.println(AI.curr);
-					AI.curr -= 1;
+					System.out.println("old " + AI.curr);
+					int prevNodeNum = AI.curr;
+					
+					while(AI.curr == prevNodeNum && nodeNums.size() != 0) {
+						AI.curr = nodeNums.pop();
+						System.out.println("new " + AI.curr);
+					}
 				}
 			}
 		});
