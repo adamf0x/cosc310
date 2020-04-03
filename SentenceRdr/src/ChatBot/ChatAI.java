@@ -51,7 +51,7 @@ public class ChatAI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		makeStatement(sList.get(0).statement.getRandomOpt());
+		makeStatement(sList.get(0).statement.getRandomOpt(), false);
 		sn = sList.get(0);
 	}
 
@@ -60,15 +60,18 @@ public class ChatAI {
 		return null;
 	}
 
-	public void makeStatement(String str) {
+	public void makeStatement(String str, boolean interNode) {
 		TestRun.addTextToWindow("Driver: " + str + "\n");
-		TestRun.aiOutput.add(str);
+        if(!interNode) 
+            TestRun.aiOutput.add(str);
+        else
+            TestRun.aiOutput.set(TestRun.aiOutput.size()-1,TestRun.aiOutput.get(TestRun.aiOutput.size()-1) + "\n" + str);
 	}
 
 	public void generateResponse(String inp) {	
 		System.out.println("gen response at: " + curr);
 		if(curr == -1) { 
-			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n");
+			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n", true);
 			sList.clear();//clear the statement list of possible statements
 			curr = 0;//set the current statement to 0
 			init();//reinitialize 
@@ -83,12 +86,12 @@ public class ChatAI {
 				curr = sn.testInpForQueues(inp, endVal).traverse();	
 				System.out.println("gen response at: " + curr);
 				sn = sList.get(curr);
-				makeStatement(sList.get(curr).statement.getRandomOpt());
+				makeStatement(sList.get(curr).statement.getRandomOpt(), false);
 				while(curr != -1 && sn.interNode) {
 					curr = sn.outgoingLinks.get(0).traverse();
 					if(curr != -1) {
 						sn = sList.get(curr); //in this case there is only 1 link, so the next node is assumed	
-						makeStatement(sList.get(curr).statement.getRandomOpt());
+						makeStatement(sList.get(curr).statement.getRandomOpt(), true);
 					}
 				}
 			}

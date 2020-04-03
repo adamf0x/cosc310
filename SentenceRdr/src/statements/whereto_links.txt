@@ -4,6 +4,6 @@
 .*(airport|bus station|harbour|uptown|up town).*
 1 3
 .*[0-9]+.*
-3 5 1
+3 5 0
 Is that somewhere out of town?
 Ok, you point and I drive.

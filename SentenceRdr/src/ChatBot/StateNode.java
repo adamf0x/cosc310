@@ -91,7 +91,7 @@ public class StateNode {
 		this.interConv = null;
 		ChatAI AI = TestRun.getAI();
 		//after concluding the interlude conversation, a question must be posed to restart the dialogue.
-		AI.makeStatement(AI.sList.get(AI.curr).statement.getRandomOpt());
+		AI.makeStatement(AI.sList.get(AI.curr).statement.getRandomOpt(), true);
 	}
 	
 	

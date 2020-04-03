@@ -45,18 +45,18 @@ public class InterludeConversation {
 		int opt = 0;
 		for(int i = 1; i < sequenceOfResponses.length;i++)
 			if(opt==sn.priorityOfResponses)sequenceOfResponses[i] = ++opt;
-			else sequenceOfResponses[i] = opt;
+			else sequenceOfResponses[i] = opt++;
 	    /*if(argS != null && argS != "") {		    
 	    	interpretStatement(argS);
 	    }*/
 	    
-	    makeStatement(sn.nlpOpeningStmt);
+	    makeStatement(sn.nlpOpeningStmt,false);
 	    
 	}	
 	
 	//ends the conversation and removes it by setting the only reference to it to null
 	public void concludeConversation() {
-		makeStatement(sn.nlpClosingStmt);
+		makeStatement(sn.nlpClosingStmt,false);
 		sn.movingOn(); 
 	}
 	
@@ -78,22 +78,22 @@ public class InterludeConversation {
 		    	case 4:for(CoreSentence sentence:sentences) { //might have to find some way to aggregate the sentences (if there is more than 1) before responding, just to keep the back and forth pattern intact
 							String sentiment = sentence.sentiment();
 							if(sentiment.equals("Positive")) {
-								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)]);
+								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;
 								System.out.println("Sentiment Detection: i = " + i);
 							}
 							if(sentiment.equals("Neutral")) {
-								this.makeStatement(neutsentresp[(int)(Math.random()*neutsentresp.length)]);
+								this.makeStatement(neutsentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;
 							}
 							if(sentiment.equals("Negative")) {
-								this.makeStatement(negsentresp[(int)(Math.random()*neutsentresp.length)]);
+								this.makeStatement(negsentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;
 							}
 							System.out.println(sentence + "\t" + sentiment);
 						}
 		    			break;
-		    	case 1:/*if(doc != null && doc.entityMentions() != null) {
+		    	case 0:/*if(doc != null && doc.entityMentions() != null) {
 		    			
 							
 						    for (CoreEntityMention em : doc.entityMentions())
@@ -136,7 +136,7 @@ public class InterludeConversation {
 		    			System.out.println("Person Detection: i = " + i);
 		    			matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
 		    			break;	
-		    	case 0:
+		    	case 1:
 		    			System.out.println("Organization Detection: i = " + i);
 		    			matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
 		    			break;
@@ -156,18 +156,23 @@ public class InterludeConversation {
 	
 	//same as in the chatAI class
 	//simpler version used by sentiment analysis to output text.
-	public void makeStatement(String str) {  
-		TestRun.addTextToWindow("Driver: " + str + "\n");
-		TestRun.aiOutput.add(str);
-	}
+	public void makeStatement(String str,boolean interNode) {
+        TestRun.addTextToWindow("Driver: " + str + "\n");
+        if(!interNode) 
+            TestRun.aiOutput.add(str);
+        else
+            TestRun.aiOutput.set(TestRun.aiOutput.size()-1,TestRun.aiOutput.get(TestRun.aiOutput.size()-1) + "\n" + str);
+    }
 	
 	//this version is used with NER and includes functionality to insert the object of the statement into the response
+	//it automatically treats each iteration of interlude banter as a separate piece of dialogue (unlike the internode)
 	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
 		String[] splitStr = str.split("%0");
 		String pString = splitStr[0];
 		String iStr = "";		
 		//the NP doesnt apply to any individual element of the tree, it is another layer over top.
-		 for (CoreMap sentence : sentences) {			 
+		 for (CoreMap sentence : sentences) {	
+			iStr = "";
 			Tree tree = sentence.get(TreeAnnotation.class);		
 			tree.constituents().toString();	
 			System.out.println("(tree.value) : " + tree.value());
@@ -178,10 +183,11 @@ public class InterludeConversation {
 				if(iStr.contains(em.text()))									
 					break;
 			}
-			for(Tree subtree : tree) {				
+			for(Tree subtree : tree) {	
+				iStr = "";
 				System.out.println("(subtree.value) : " + subtree.value());
 				if(subtree.value().equals("NP")) {
-					for(Word wrd: tree.yieldWords()) {
+					for(Word wrd: subtree.yieldWords()) {
 						iStr += wrd.toString() + " ";
 					}
 					if(iStr.contains(em.text()))									
@@ -193,8 +199,9 @@ public class InterludeConversation {
 		for(int i = 1; i < splitStr.length;i++) {//just in case multiple mentions are added later
 			pString += iStr + splitStr[i];
 		}
-		TestRun.addTextToWindow("Driver: " + pString + "\n");
-		TestRun.aiOutput.add(pString);
+		TestRun.addTextToWindow("Driver: " + pString + "\n");        
+        TestRun.aiOutput.add(pString);
+      
 	}
 	
 	//this is a refactoring of the function calls found in the switch statement in interpretStatement() leading to NER related responses
