@@ -110,7 +110,7 @@ public class InterludeConversation {
 		    	case 4:	System.out.println("Cause of Death Detection: i = " + i);
 		    			matchedSomething = chooseResponse("CAUSE_OF_DEATH",i,doc,sentCore, dr);
 		    			break;
-		    	case 5:	System.out.println("Person Detection: i = " + i);
+		    	case 5:	System.out.println("Nationality Detection: i = " + i);
 		    			matchedSomething = chooseResponse("NATIONALITY",i,doc,sentCore, nr);
 		    			break;
 		    	case 1: System.out.println("Organization Detection: i = " + i);
@@ -143,6 +143,7 @@ public class InterludeConversation {
 	
 	//this version is used with NER and includes functionality to insert the object of the statement into the response
 	//it automatically treats each iteration of interlude banter as a separate piece of dialogue (unlike the internode)
+	//this has been replaced by the recursive traversal below. Reason being: it only checked for simple references (nothing nested in a VP)
 	/*public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
 		String[] splitStr = str.split("%0");
 		String pString = splitStr[0];
@@ -226,11 +227,12 @@ public class InterludeConversation {
 	public boolean chooseResponse(String entType, int index, CoreDocument cDoc, List <CoreMap> sCore, String[] stmt) {
 		if(cDoc != null && cDoc.entityMentions() != null) {
 			boolean matchedSomething = false;
-			
+			int vStr = -1;
 		    for (CoreEntityMention em : cDoc.entityMentions())
-		    	if(em.entityType().equals(entType)) {
+		    	//if(em.entityType().equals(entType) &&  (vStr = new edu.stanford.nlp.ling.Word(em.text()).value()) != "PRP" && vStr != "PRP$" ) {
+		    	if(em.entityType().equals(entType) &&  (vStr = types.Word.getWordObj(em.text().toLowerCase()).sPart) != 15 && vStr != 17 ) {
 		    		this.makeStatement(stmt[((int)Math.random())*stmt.length],em,sCore);
-		    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
+		    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType() + "\t:vStr = " + vStr);	
 		    		if(this.sequenceOfResponses[index] == sn.priorityOfResponses)matchedQueue = true;//the interlude conversation ends if this is set to true
 		    		matchedSomething = true; //the function exits if this is set to true;
 		    		break;
