@@ -29,9 +29,12 @@ public class InterludeConversation {
 	static String[] tr = {"%0, that must be interesting", "I always found the idea of being a %0 daunting", "You're a %0? Good for you."};
 	static String[] pr = {"%0, that sounds familiar...\nWhere did I hear that name?","%0, is that a friend of yours?", "%0, now there's a fancy name"};
 	static String[] or = {"I've heard good things about %0, what do they do again?","%0, I had a friend who did some work for them", "Seems you can't go a day without reading about %0 online..."};
-	static String[] negsentresp = {"Im sorry to hear that", "Well, theres no need to be negative about things", "You'll get over it"};
+	static String[] dr = {"%0, That's terrible!", "I am sympathetic. Few things are more devastating than %0", "Those poor people, %0 at a time like this"};
+	static String[] nr = { "%0 makes me appreciate foreign culture"};
+	static String[] negsentresp = {"Im sorry to hear that", "Well, theres no need to be negative about things", "You'll get over it", "If I had a nickle for every time I heard that..."};
 	static String[] possentresp = {"Yeah I also enjoy it", "I agree, it's great!", "Glad to hear it!", "Well there ya go!"};
 	static String[] neutsentresp = {"Well im sure youll grow to enjoy it", "Never been much of a fan myself", "What can ya do?"};
+	static String[] noMatchResp = {"Fair enough", "Uh-huh", "Oh?", "Right...", "I guess", "Go on..."}; 
 	public int[] sequenceOfResponses;
 	public boolean matchedQueue = false;
 	public int iterationsToDefault = 3;
@@ -40,7 +43,7 @@ public class InterludeConversation {
 		if(pipeline == null) {
 			init();
 		}
-		sequenceOfResponses = new int[5];
+		sequenceOfResponses = new int[7];
 		sequenceOfResponses[0] = sn.priorityOfResponses;
 		int opt = 0;
 		for(int i = 1; i < sequenceOfResponses.length;i++) {
@@ -77,7 +80,7 @@ public class InterludeConversation {
 	    for(int i = 0; i < this.sequenceOfResponses.length; i++) {
 	    	if(matchedSomething)break;
 	    	switch(this.sequenceOfResponses[i]) {
-		    	case 4:for(CoreSentence sentence:sentences) { //might have to find some way to aggregate the sentences (if there is more than 1) before responding, just to keep the back and forth pattern intact
+		    	case 6:for(CoreSentence sentence:sentences) { //might have to find some way to aggregate the sentences (if there is more than 1) before responding, just to keep the back and forth pattern intact
 							String sentiment = sentence.sentiment();
 							if(sentiment.equals("Positive")) {
 								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)],false);
@@ -104,12 +107,19 @@ public class InterludeConversation {
 		    	case 3:	System.out.println("Person Detection: i = " + i);
 		    			matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
 		    			break;	
+		    	case 4:	System.out.println("Cause of Death Detection: i = " + i);
+		    			matchedSomething = chooseResponse("CAUSE_OF_DEATH",i,doc,sentCore, dr);
+		    			break;
+		    	case 5:	System.out.println("Person Detection: i = " + i);
+		    			matchedSomething = chooseResponse("NATIONALITY",i,doc,sentCore, nr);
+		    			break;
 		    	case 1: System.out.println("Organization Detection: i = " + i);
 		    			matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
 		    			break;
 				//there is no default case, the loop continues to search in the particular order of priority predetermined for each node (default is sentiment first)
 	    	}
 	    }
+	    if(!matchedSomething) {this.makeStatement(noMatchResp[(int)(Math.random()*neutsentresp.length)],false);}
 		return matchedSomething; //this currently doesnt signal anything but might be useful information to pass on
 	}
 	

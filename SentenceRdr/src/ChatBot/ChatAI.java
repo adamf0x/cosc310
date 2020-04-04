@@ -73,7 +73,7 @@ public class ChatAI {
 		if(curr == -1) { 
 			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n", true);
 			sList.clear();//clear the statement list of possible statements
-			curr = 0;//set the current statement to 0
+			curr = 0;//set the current statement to 0			
 			init();//reinitialize 
 			return;//exit the generate response function
 		}
