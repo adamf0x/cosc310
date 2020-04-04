@@ -43,9 +43,11 @@ public class InterludeConversation {
 		sequenceOfResponses = new int[5];
 		sequenceOfResponses[0] = sn.priorityOfResponses;
 		int opt = 0;
-		for(int i = 1; i < sequenceOfResponses.length;i++)
+		for(int i = 1; i < sequenceOfResponses.length;i++) {
 			if(opt==sn.priorityOfResponses)sequenceOfResponses[i] = ++opt;
-			else sequenceOfResponses[i] = opt++;
+			else sequenceOfResponses[i] = opt;
+			opt++;
+		}
 	    /*if(argS != null && argS != "") {		    
 	    	interpretStatement(argS);
 	    }*/
@@ -93,51 +95,16 @@ public class InterludeConversation {
 							System.out.println(sentence + "\t" + sentiment);
 						}
 		    			break;
-		    	case 0:/*if(doc != null && doc.entityMentions() != null) {
-		    			
-							
-						    for (CoreEntityMention em : doc.entityMentions())
-						    	if(em.entityType().equals("LOCATION")) {
-						    		this.makeStatement(lr[((int)Math.random())*lr.length],em,sentCore);
-						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
-						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true;//the interlude conversation ends if this is set to true
-						    		matchedSomething = true; //the function exits if this is set to true;
-						    		break;
-						    	}
-						}*/
-		    			System.out.println("Location Detection: i = " + i);
+		    	case 0:	System.out.println("Location Detection: i = " + i);
 		    			matchedSomething = chooseResponse("LOCATION",i,doc,sentCore, lr);
 						break;
-		    	case 2:/*if(doc != null && doc.entityMentions() != null) {
-							
-						    for (CoreEntityMention em : doc.entityMentions())
-						    	if(em.entityType().equals("TITLE")) {
-						    		this.makeStatement(tr[((int)Math.random())*tr.length],em,sentCore);
-						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
-						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true; //the interlude conversation ends if this is set to true
-						    		matchedSomething = true; //the function exits if this is set to true;
-						    		break;
-						    	}
-						}*/
-		    			System.out.println("Title Detection: i = " + i);
+		    	case 2: System.out.println("Title Detection: i = " + i);
 		    			matchedSomething = chooseResponse("TITLE",i,doc,sentCore, tr);
 						break;	
-		    	case 3:/*if(doc != null && doc.entityMentions() != null) {
-					
-					    	for (CoreEntityMention em : doc.entityMentions())
-						    	if(em.entityType().equals("PERSON")) {
-						    		this.makeStatement(tr[((int)Math.random())*tr.length],em,sentCore);
-						    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType());	
-						    		if(this.sequenceOfResponses[i] == sn.priorityOfResponses)matchedQueue = true; //the interlude conversation ends if this is set to true
-						    		matchedSomething = true; //the function exits if this is set to true;
-						    		break;
-					    	}
-						}*/
-		    			System.out.println("Person Detection: i = " + i);
+		    	case 3:	System.out.println("Person Detection: i = " + i);
 		    			matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
 		    			break;	
-		    	case 1:
-		    			System.out.println("Organization Detection: i = " + i);
+		    	case 1: System.out.println("Organization Detection: i = " + i);
 		    			matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
 		    			break;
 				//there is no default case, the loop continues to search in the particular order of priority predetermined for each node (default is sentiment first)
