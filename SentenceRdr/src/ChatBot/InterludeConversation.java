@@ -85,15 +85,15 @@ public class InterludeConversation {
 							if(sentiment.equals("Positive")) {
 								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;
-								System.out.println("Sentiment Detection: i = " + i);
+								System.out.println("Sentiment Detection: i = " + i);								
 							}
 							if(sentiment.equals("Neutral")) {
 								this.makeStatement(neutsentresp[(int)(Math.random()*neutsentresp.length)],false);
-								matchedSomething = true; //the function exits if this is set to true;
+								matchedSomething = true; //the function exits if this is set to true;								
 							}
 							if(sentiment.equals("Negative")) {
 								this.makeStatement(negsentresp[(int)(Math.random()*neutsentresp.length)],false);
-								matchedSomething = true; //the function exits if this is set to true;
+								matchedSomething = true; //the function exits if this is set to true;								
 							}
 							System.out.println(sentence + "\t" + sentiment);
 						}
@@ -143,7 +143,7 @@ public class InterludeConversation {
 	
 	//this version is used with NER and includes functionality to insert the object of the statement into the response
 	//it automatically treats each iteration of interlude banter as a separate piece of dialogue (unlike the internode)
-	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
+	/*public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
 		String[] splitStr = str.split("%0");
 		String pString = splitStr[0];
 		String iStr = "";		
@@ -151,7 +151,7 @@ public class InterludeConversation {
 		 for (CoreMap sentence : sentences) {	
 			iStr = "";
 			Tree tree = sentence.get(TreeAnnotation.class);		
-			tree.constituents().toString();	
+			
 			System.out.println("(tree.value) : " + tree.value());
 			if(tree.value().equals("NP")) {
 				for(Word wrd: tree.yieldWords()) {
@@ -179,6 +179,47 @@ public class InterludeConversation {
 		TestRun.addTextToWindow("Driver: " + pString + "\n");        
         TestRun.aiOutput.add(pString);
       
+	}*/
+	
+	
+	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
+		String[] splitStr = str.split("%0");
+		String pString = splitStr[0];
+		String iStr = "";		
+		//the NP doesnt apply to any individual element of the tree, it is another layer over top.
+		 for (CoreMap sentence : sentences) {	
+			iStr = "";
+			Tree tree = sentence.get(TreeAnnotation.class);		
+			if((iStr = findNEinTree(em.text(),tree)) != null)break;
+			
+		}
+		if(iStr != null) { 
+			for(int i = 1; i < splitStr.length;i++) {//just in case multiple mentions are added later
+				pString += iStr + splitStr[i];
+			}
+		}
+		else pString = "I don't even know what to say...";
+		TestRun.addTextToWindow("Driver: " + pString + "\n");        
+        TestRun.aiOutput.add(pString);
+      
+	}
+	
+	public String findNEinTree(String searchStr, Tree tree) { //expected behavior: return null only if none of the subtrees contains the ner text within a NP (should be never)
+		String iStr = "";
+		System.out.println("(tree.value) : " + tree.value());
+		if(tree.value().equals("NP")) {
+			for(Word wrd: tree.yieldWords()) {
+				iStr += wrd.toString() + " ";
+			}
+			if(iStr.contains(searchStr))									
+				return iStr.trim();
+			
+		}
+		for(Tree subtree : tree) {
+			if(!subtree.isLeaf() && !(subtree == tree) && (iStr = findNEinTree(searchStr, subtree)) != null) return iStr;
+		}
+		return null;
+		
 	}
 	
 	//this is a refactoring of the function calls found in the switch statement in interpretStatement() leading to NER related responses
