@@ -74,7 +74,6 @@ public class TestRun extends Application {
 			@Override
 			public void handle(MouseEvent arg0) {
 				output.appendText("You: " + input.getText() + "\n\n");
-				System.out.println(input.getText());
 				AI.handleInput(input.getText());
 				userInput.add(input.getText());
 				nodeNums.push(AI.curr);

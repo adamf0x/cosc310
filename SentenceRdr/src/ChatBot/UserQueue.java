@@ -52,16 +52,16 @@ public class UserQueue {
 			matches = false;
 			//change it so tht instead of returning the modality, etc it just mutates the sentence, so that the function can execute for compound sentences recursively
 			if((testMode = Modality.getModality((Sentence)endVal)) != null) {
-				mode = Modality.getModality(eV).id;//System.out.println("\n\nmodality : " + testMode.toString());
+				mode = Modality.getModality(eV).id;
 				if(auxContains(0,mode)) matches = true;
 			}
 			
 			if((testPerson = Modality.getPerson((Sentence)endVal)) != null) {
-				person = Modality.getPerson(eV).id;//System.out.println("\n\nperson : " + testPerson.toString());
+				person = Modality.getPerson(eV).id;
 				if(auxContains(1,person)) matches = true;
 			}
 			if((testVoice = Modality.getVoice((Sentence)endVal)) != null) {
-				voice = Modality.getVoice(eV).id;//System.out.println("\n\nvoice : " + testVoice.toString());
+				voice = Modality.getVoice(eV).id;
 				if(auxContains(2,voice)) matches = true;
 			}
 		}

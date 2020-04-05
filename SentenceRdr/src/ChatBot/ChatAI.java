@@ -40,7 +40,6 @@ public class ChatAI {
 				str = scn.nextLine();
 				boolean interNode = (Integer.parseInt(str.split(" ")[1])==1)?true:false;
 				if(str.split(" ")[0] == "destinationreached") {
-					System.out.println("initialized end node");
 					sList.add(new StateNode(count++,str.split(" ")[0],interNode, true));
 				}
 				else {
@@ -69,7 +68,6 @@ public class ChatAI {
 	}
 
 	public void generateResponse(String inp) {	
-		System.out.println("gen response at: " + curr);
 		if(curr == -1) { 
 			makeStatement("Thanks again for choosing EZ cabs hope to have you again soon!\n\n", true);
 			sList.clear();//clear the statement list of possible statements
@@ -84,7 +82,6 @@ public class ChatAI {
 			UserQueue next = sn.testInpForQueues(inp, endVal);
 			if(next != null) {				
 				curr = sn.testInpForQueues(inp, endVal).traverse();	
-				System.out.println("gen response at: " + curr);
 				sn = sList.get(curr);
 				makeStatement(sList.get(curr).statement.getRandomOpt(), false);
 				while(curr != -1 && sn.interNode) {
@@ -110,7 +107,6 @@ public class ChatAI {
 	}
 	
 	public void handleInput(String input) {
-		System.out.println("handling input");
 		//the interConv will only exist until it concludes, at which point control is returned to the normal flow.
 		if(this.sn.interConv != null) {
 			//sn.interConv.interpretStatement(input);
@@ -119,7 +115,6 @@ public class ChatAI {
 			
 		}
 		else {
-			System.out.println("generating response");
 			generateResponse(input);
 		}
 		

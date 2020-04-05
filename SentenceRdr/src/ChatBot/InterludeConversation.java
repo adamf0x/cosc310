@@ -74,7 +74,6 @@ public class InterludeConversation {
 	    ArrayList<CoreSentence> sentences = (ArrayList<CoreSentence>) doc.sentences(); 
 	    Map<Integer, CorefChain> graph = doc.annotation().get(CorefChainAnnotation.class);
 	    List <CoreMap> sentCore = doc.annotation().get(SentencesAnnotation.class);
-	    System.out.println(argS);
 	    boolean matchedSomething = false;
 	    //run through the array of priorities, matching each in turn if necessary.
 	    for(int i = 0; i < this.sequenceOfResponses.length; i++) {
@@ -85,7 +84,6 @@ public class InterludeConversation {
 							if(sentiment.equals("Positive")) {
 								this.makeStatement(possentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;
-								System.out.println("Sentiment Detection: i = " + i);								
 							}
 							if(sentiment.equals("Neutral")) {
 								this.makeStatement(neutsentresp[(int)(Math.random()*neutsentresp.length)],false);
@@ -94,27 +92,20 @@ public class InterludeConversation {
 							if(sentiment.equals("Negative")) {
 								this.makeStatement(negsentresp[(int)(Math.random()*neutsentresp.length)],false);
 								matchedSomething = true; //the function exits if this is set to true;								
-							}
-							System.out.println(sentence + "\t" + sentiment);
+							}							
 						}
 		    			break;
-		    	case 0:	System.out.println("Location Detection: i = " + i);
-		    			matchedSomething = chooseResponse("LOCATION",i,doc,sentCore, lr);
+		    	case 0:	matchedSomething = chooseResponse("LOCATION",i,doc,sentCore, lr);
 						break;
-		    	case 2: System.out.println("Title Detection: i = " + i);
-		    			matchedSomething = chooseResponse("TITLE",i,doc,sentCore, tr);
+		    	case 2: matchedSomething = chooseResponse("TITLE",i,doc,sentCore, tr);
 						break;	
-		    	case 3:	System.out.println("Person Detection: i = " + i);
-		    			matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
+		    	case 3:	matchedSomething = chooseResponse("PERSON",i,doc,sentCore, pr);
 		    			break;	
-		    	case 4:	System.out.println("Cause of Death Detection: i = " + i);
-		    			matchedSomething = chooseResponse("CAUSE_OF_DEATH",i,doc,sentCore, dr);
+		    	case 4:	matchedSomething = chooseResponse("CAUSE_OF_DEATH",i,doc,sentCore, dr);
 		    			break;
-		    	case 5:	System.out.println("Nationality Detection: i = " + i);
-		    			matchedSomething = chooseResponse("NATIONALITY",i,doc,sentCore, nr);
+		    	case 5:	matchedSomething = chooseResponse("NATIONALITY",i,doc,sentCore, nr);
 		    			break;
-		    	case 1: System.out.println("Organization Detection: i = " + i);
-		    			matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
+		    	case 1: matchedSomething = chooseResponse("ORGANIZATION",i,doc,sentCore, or);
 		    			break;
 				//there is no default case, the loop continues to search in the particular order of priority predetermined for each node (default is sentiment first)
 	    	}
@@ -125,7 +116,6 @@ public class InterludeConversation {
 	
 	public void nextMove(String argS, boolean mQ) {
 		if(matchedQueue || this.iterationsToDefault == 0) {
-			System.out.println("exiting interlude conversation");
 			concludeConversation();		
 		}
 		else interpretStatement(argS);
@@ -142,46 +132,7 @@ public class InterludeConversation {
     }
 	
 	//this version is used with NER and includes functionality to insert the object of the statement into the response
-	//it automatically treats each iteration of interlude banter as a separate piece of dialogue (unlike the internode)
-	//this has been replaced by the recursive traversal below. Reason being: it only checked for simple references (nothing nested in a VP)
-	/*public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
-		String[] splitStr = str.split("%0");
-		String pString = splitStr[0];
-		String iStr = "";		
-		//the NP doesnt apply to any individual element of the tree, it is another layer over top.
-		 for (CoreMap sentence : sentences) {	
-			iStr = "";
-			Tree tree = sentence.get(TreeAnnotation.class);		
-			
-			System.out.println("(tree.value) : " + tree.value());
-			if(tree.value().equals("NP")) {
-				for(Word wrd: tree.yieldWords()) {
-					iStr += wrd.toString() + " ";
-				}
-				if(iStr.contains(em.text()))									
-					break;
-			}
-			for(Tree subtree : tree) {	
-				iStr = "";
-				System.out.println("(subtree.value) : " + subtree.value());
-				if(subtree.value().equals("NP")) {
-					for(Word wrd: subtree.yieldWords()) {
-						iStr += wrd.toString() + " ";
-					}
-					if(iStr.contains(em.text()))									
-						break;
-				}
-			}
-			iStr = iStr.trim();
-		}
-		for(int i = 1; i < splitStr.length;i++) {//just in case multiple mentions are added later
-			pString += iStr + splitStr[i];
-		}
-		TestRun.addTextToWindow("Driver: " + pString + "\n");        
-        TestRun.aiOutput.add(pString);
-      
-	}*/
-	
+	//it automatically treats each iteration of interlude banter as a separate piece of dialogue (unlike the internode)	
 	
 	public void makeStatement(String str, CoreEntityMention em, List <CoreMap> sentences) {
 		String[] splitStr = str.split("%0");
@@ -207,7 +158,6 @@ public class InterludeConversation {
 	
 	public String findNEinTree(String searchStr, Tree tree) { //expected behavior: return null only if none of the subtrees contains the ner text within a NP (should be never)
 		String iStr = "";
-		System.out.println("(tree.value) : " + tree.value());
 		if(tree.value().equals("NP")) {
 			for(Word wrd: tree.yieldWords()) {
 				iStr += wrd.toString() + " ";
@@ -232,7 +182,6 @@ public class InterludeConversation {
 		    	//if(em.entityType().equals(entType) &&  (vStr = new edu.stanford.nlp.ling.Word(em.text()).value()) != "PRP" && vStr != "PRP$" ) {
 		    	if(em.entityType().equals(entType) &&  (vStr = types.Word.getWordObj(em.text().toLowerCase()).sPart) != 15 && vStr != 17 ) {
 		    		this.makeStatement(stmt[((int)Math.random())*stmt.length],em,sCore);
-		    		System.out.println("\tdetected entity: \t"+em.text()+"\t"+em.entityType() + "\t:vStr = " + vStr);	
 		    		if(this.sequenceOfResponses[index] == sn.priorityOfResponses)matchedQueue = true;//the interlude conversation ends if this is set to true
 		    		matchedSomething = true; //the function exits if this is set to true;
 		    		break;
