@@ -15,22 +15,39 @@ Below is our class hierarchy diagram in order to further explain the organizatio
 *See “image1.png” in GitHub repository for enlarged photo*
 
 Class Roles:
+
 TestRun: the entry point for the application, and the GUI control center (extends javafx application). Employs a singleton to allow control of JavaFX GUI elements from anywhere.
+
 ChatAI: the class responsible for mimicking conversation
+
 StateNode: The Node class for the graph of Chatbot behaviours
+
 UserQueue: Class modelling links in the above-mentioned graph
+
 Stmt: Statements that the bot can make
+
 SParse: top level of speech parsing system which encapsulates and analyses the statements to determine metadata.
+
 Word: wrapper class for dictionary word, the definitions associated with it, and the parts of speech associated with each definition
+
 Def: struct to store a definition and part of speech qualifier
+
 Node: Base class from which all other Sparse tree nodes extend
+
 Phrase: extends node, represents a list of nodes which together form a type of phrase
-About 15 subclasses of Node and Phrase representing the various parts of speech and phrases found in an English sentence. Little specific functionality is implemented in many cases, but room to do so exists.
+About 15 subclasses of Node and Phrase representing the various parts of speech and phrases found in an English sentence. Little 
+specific functionality is implemented in many cases, but room to do so exists.
+
 Sentence: extends phrase, top-level class in the SParse phrase tree. It contains a noun phrase and a verb phrase typically. Can contain only a verb phrase, or only an interjection depending on the voice/mode
+
 Modality: class which determines the modality, person and voice of the sentence/subject.
+
 Mode: Enumerated instance of various types of mode (tense and optionality)
+
 Person: same as above, but for 1st, 2nd, 3rd person, singular, plural, etc
+
 Voice: imperative, declarative, interrogative, salutative (we made that last one up)
+
 InterludeConversation: Handles the AIs response to user input during the “interlude conversations” which are triggered after the user responds a certain way to questions posed by the AI. During these interlude conversations the user is given a large degree of freedom as to what they can input, as the AI asks very open ended questions. The AI attempts to use NLP along with the SParse class in order to respond appropriately
 
 
