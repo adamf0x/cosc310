@@ -79,6 +79,6 @@ The Stanford nlp libraries we used are:
 These can be combined into a user library for ease of organization
 After they have been added the program should compile and run without issue. (A path mismatch was occuring in eclipse regarding the build path for javafx.application and event, but that is just an IDE related issue, removing the import statement and adding it again resolves it)
 
-
+![(forreadme)](https://github.com/adamf0x/cosc310/blob/master/programfeatures.jpg)
 
 
